@@ -6,7 +6,7 @@
 <title>FOR Brinks — Connect telematics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block" rel="stylesheet">
 <style>
 @font-face{font-family:'Söhne';src:url('fonts/soehne-leicht.woff2') format('woff2');font-weight:300;font-style:normal;font-display:swap}
 @font-face{font-family:'Söhne';src:url('fonts/soehne-buch.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
@@ -40,6 +40,7 @@
     overflow-x:hidden;
   }
   .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;line-height:1;user-select:none}
+  .material-symbols-outlined.icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
 
   .app{display:flex;min-height:100vh;width:100%}
 
@@ -60,7 +61,7 @@
   .navbtn.is-active{color:var(--icon-active)}
   .navbtn.is-active::before{content:"";position:absolute;left:6px;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--navy)}
   .navbtn .caret{position:absolute;right:2px;bottom:14px;font-size:12px;color:var(--icon)}
-  .avatar{width:24px;height:24px;border-radius:1000px;background:var(--navy);border:1px solid #d9d9d9;
+  .avatar{width:24px;height:24px;border-radius:1000px;background:transparent;border:1px solid #d9d9d9;
     display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;line-height:1.2}
   .nav__chevron{border:0;background:transparent;cursor:pointer;color:var(--icon);width:24px;height:24px;
     display:flex;align-items:center;justify-content:center}
@@ -73,10 +74,10 @@
   @keyframes kenburns{from{transform:scale(1.06)}to{transform:scale(1)}}
   .hero__scrim{position:absolute;inset:0;pointer-events:none;
     background:
-      linear-gradient(to top,#090909 0%,rgba(9,9,9,.97) 16%,rgba(9,9,9,.72) 34%,rgba(9,9,9,.30) 54%,rgba(9,9,9,0) 72%),
-      linear-gradient(to right, rgba(9,9,9,.40) 0%, rgba(9,9,9,0) 26%)}
+      linear-gradient(to top,#090909 0%,rgba(9,9,9,.88) 12%,rgba(9,9,9,.42) 28%,rgba(9,9,9,.08) 50%,rgba(9,9,9,0) 68%),
+      linear-gradient(to right, rgba(9,9,9,.18) 0%, rgba(9,9,9,0) 22%)}
   .hero__scrim-top{position:absolute;left:0;right:0;top:0;height:160px;pointer-events:none;
-    background:linear-gradient(to bottom,rgba(3,5,3,.55),rgba(3,5,3,0))}
+    background:linear-gradient(to bottom,rgba(3,5,3,.28),rgba(3,5,3,0))}
 
   /* top bar */
   .topbar{position:absolute;top:0;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;
@@ -109,7 +110,9 @@
   .eyebrow__label{font-size:13px;letter-spacing:2.6px;font-weight:500;text-transform:uppercase;color:#e7ecf2}
 
   .headline{font-size:clamp(30px,4.6vw,56px);line-height:1.06;font-weight:600;letter-spacing:-.5px;color:#fff;max-width:18ch}
-  .headline .accent{font-style:italic;color:#82ffc3;font-weight:600}
+  .headline .accent{font-style:italic;font-weight:600;
+    background:linear-gradient(90deg,#82ffc3 0%,#38e8ff 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   .headline b{font-weight:600}
   .headline .word{display:inline-block;white-space:pre}
 
@@ -129,49 +132,34 @@
 
   /* ===== sticky bottom stepper (minimal, glowing nodes) ===== */
   .stepbar{position:fixed;left:calc(var(--nav-w) + var(--gutter));right:var(--gutter);bottom:var(--gutter);z-index:25;
-    display:grid;grid-template-columns:repeat(5,1fr);
+    display:flex;align-items:center;
     opacity:0;transform:translateY(18px);animation:barup .7s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:1.15s}
   @keyframes barup{to{opacity:1;transform:translateY(0)}}
 
-  .cell{position:relative;border:0;background:transparent;cursor:pointer;color:inherit;font:inherit;
-    display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px 8px 8px;
+  .cell{flex:1;position:relative;border:0;background:transparent;cursor:default;color:inherit;font:inherit;
+    display:flex;flex-direction:column;align-items:center;gap:5px;padding:18px 14px 16px;
     -webkit-tap-highlight-color:transparent}
   .cell:focus-visible{outline:none}
-  .cell:focus-visible .cell__node{box-shadow:0 0 0 3px rgba(130,255,195,.5)}
 
-  /* connector line between nodes (segment leading INTO each node) */
-  .cell:not(:first-child)::before{content:"";position:absolute;top:24px;left:-50%;right:50%;height:1px;
-    background:rgba(255,255,255,.13);transition:background .45s ease}
-  .cell.is-done::before,.cell.is-active::before{
-    background:linear-gradient(90deg,rgba(55,199,154,.55),rgba(130,255,195,.85))}
-
-  /* travelling luminous pulse on the active incoming connector (Signal verb) */
-  .cell:not(:first-child).is-active::after{content:"";position:absolute;top:22px;left:-50%;right:50%;height:5px;
-    border-radius:5px;pointer-events:none;
-    background:radial-gradient(circle at 50% 50%,rgba(130,255,195,.95),rgba(130,255,195,0) 62%);
-    background-size:36% 100%;background-repeat:no-repeat;
-    animation:signal 2.2s linear infinite}
-  @keyframes signal{0%{background-position:-25% 0}100%{background-position:125% 0}}
-
-  /* node */
-  .cell__node{position:relative;width:10px;height:10px;border-radius:50%;
-    background:transparent;border:1px solid rgba(255,255,255,.30);
-    transition:background .3s ease,border-color .3s ease,transform .3s ease}
-  .cell.is-upcoming:hover .cell__node{border-color:rgba(130,255,195,.6)}
-  .cell.is-done .cell__node{background:#37c79a;border-color:#37c79a}
-  .cell.is-active .cell__node{background:#82ffc3;border-color:#82ffc3;transform:scale(1.2);
-    animation:nodeGlow 2.4s ease-in-out infinite}
+  .cell__icon{height:22px;display:flex;align-items:center;justify-content:center;margin-bottom:2px}
+  .cell__icon .material-symbols-outlined{font-size:18px;color:rgba(255,255,255,.30)}
+  .cell__dot{width:10px;height:10px;border-radius:50%;background:#82ffc3;flex:0 0 auto;
+    box-shadow:0 0 10px 2px rgba(130,255,195,.55);animation:nodeGlow 2.4s ease-in-out infinite}
   @keyframes nodeGlow{
     0%,100%{box-shadow:0 0 8px 1px rgba(130,255,195,.45)}
     50%{box-shadow:0 0 0 6px rgba(130,255,195,.05),0 0 18px 4px rgba(130,255,195,.8)}
   }
 
-  /* label */
-  .cell__title{font-size:clamp(12px,1.15vw,15px);font-weight:500;line-height:1.2;text-align:center;
-    color:#727a86;letter-spacing:.2px;transition:color .3s ease}
-  .cell.is-done .cell__title{color:#8b939e}
-  .cell:hover .cell__title{color:#cdd3da}
-  .cell.is-active .cell__title{color:#fff;font-weight:600}
+  .cell__title{font-size:clamp(14px,1.4vw,20px);font-weight:700;line-height:1.15;text-align:center;
+    color:rgba(255,255,255,.38)}
+  .cell.is-done .cell__title{color:rgba(255,255,255,.55)}
+  .cell.is-active .cell__title{color:#fff}
+
+  .cell__sub{font-size:clamp(11px,.95vw,13px);text-align:center;color:rgba(255,255,255,.32);line-height:1.3}
+  .cell.is-active .cell__sub{color:#82ffc3}
+
+  .step-sep{color:rgba(255,255,255,.25);flex:0 0 auto;user-select:none;display:flex;align-items:center}
+  .step-sep .material-symbols-outlined{font-size:20px;margin:0 -6px}
 
   /* ===== entrance reveal ===== */
   .reveal{opacity:0;animation:rise .75s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:var(--d,0s)}
@@ -207,17 +195,171 @@
   body[data-variant="1"] .screen--1{display:flex}
   body[data-variant="3"] .screen--3{display:block}
   body[data-variant="4"] .screen--4{display:block}
-  .screen--2{position:fixed;inset:0;z-index:60}
-  body[data-variant="2"] .screen--2{display:flex}
-  body[data-variant="2"] .app{display:none}
+  body[data-variant="2"] .screen--2{display:block}
 
-  /* placeholder shells for not-yet-built variants */
-  .ph{flex:1;min-height:62vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:10px;text-align:center;padding:48px 24px}
-  .screen--2 .ph{background:#05070a;width:100%}
-  .ph__tag{font-family:var(--font-mono);font-size:11px;letter-spacing:2.4px;text-transform:uppercase;color:#82ffc3}
-  .ph__t{font-size:clamp(22px,3vw,34px);font-weight:600;color:#fff;letter-spacing:-.3px}
-  .ph__s{font-size:14px;color:#8b939e}
+  /* ---- Variant 2: Loading hero ---- */
+  .screen--2{position:relative;min-height:100vh;color:#fff}
+  .v2hero{position:relative;z-index:2;display:flex;flex-direction:column;
+    align-items:center;gap:24px;padding:clamp(80px,9vh,120px) clamp(22px,4vw,64px) 100px;text-align:center}
+  .v2hero__title{font-size:clamp(20px,2.4vw,34px);font-weight:600;line-height:1.22;letter-spacing:-.4px;max-width:22ch;text-align:center}
+
+  /* V2 Timeline accordion */
+  .v2timeline{width:100%;max-width:960px;display:flex;flex-direction:column;gap:8px;margin-top:8px;text-align:left}
+  .tl-phase{border-radius:12px;overflow:hidden;
+    background:rgba(14,17,23,.55);border:1px solid rgba(255,255,255,.09);
+    -webkit-backdrop-filter:blur(18px) saturate(1.1);backdrop-filter:blur(18px) saturate(1.1)}
+  .tl-phase__hd{display:flex;align-items:center;gap:20px;padding:16px 22px;cursor:pointer;user-select:none}
+  .tl-phase__meta{display:flex;flex-direction:column;gap:5px;flex:0 0 72px}
+  .tl-phase__num{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:rgba(130,255,195,.45);text-transform:uppercase}
+  .tl-phase__dashes{display:none}
+  .tl-phase__title{flex:1;min-width:0;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .tl-phase__time{font-family:var(--font-mono);font-size:clamp(10px,.95vw,13px);font-weight:700;letter-spacing:.6px;color:#82ffc3;white-space:nowrap}
+  .tl-phase__sub{font-size:14px;color:rgba(255,255,255,.65);white-space:nowrap}
+  .tl-phase__right{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  .tl-phase__icon-bubble{width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.14);
+    display:flex;align-items:center;justify-content:center}
+  .tl-phase__icon-bubble .material-symbols-outlined{font-size:13px;color:rgba(255,255,255,.45)}
+  .tl-phase__count{font-family:var(--font-mono);font-size:12px;color:rgba(255,255,255,.4);margin-right:4px}
+  .tl-phase__chev{display:flex;color:rgba(255,255,255,.45);transition:transform .25s}
+  .tl-phase__chev .material-symbols-outlined{font-size:20px}
+  .tl-phase.is-open .tl-phase__chev{transform:rotate(180deg)}
+  .tl-phase.is-open .tl-phase__right .tl-phase__icon-bubble,
+  .tl-phase.is-open .tl-phase__count{display:none}
+
+  .tl-phase__body{display:none;padding:2px 22px 18px;gap:10px;flex-wrap:wrap}
+  .tl-phase.is-open .tl-phase__body{display:flex}
+
+  .tl-card{flex:1;min-width:180px;display:flex;align-items:flex-start;gap:12px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+    border-radius:10px;padding:16px 14px}
+  .tl-card__icon{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(130,255,195,.38);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .tl-card__icon .material-symbols-outlined{font-size:18px;color:#82ffc3}
+  /* Blue/locked variant — needs user input */
+  .tl-card--input .tl-card__icon{border-color:rgba(99,153,255,.5)}
+  .tl-card--input .tl-card__icon .material-symbols-outlined{color:#6399ff}
+  .tl-card--input .tl-card__title{color:#6399ff}
+  .tl-card__text{display:flex;flex-direction:column;gap:5px}
+  .tl-card__title{font-size:14px;font-weight:700;color:#fff;line-height:1.3}
+  .tl-card__sub{font-size:12.5px;color:rgba(255,255,255,.52);line-height:1.5}
+
+  /* Phase 01 CTA card */
+  .tl-card--cta{background:rgba(130,255,195,.07);border-color:rgba(130,255,195,.22)}
+  .tl-card--cta .tl-card__title{color:#82ffc3}
+
+  /* V2 button group */
+  .v2btngroup{display:flex;gap:12px;margin-top:20px;justify-content:center;flex-wrap:wrap}
+  .v2btn{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 22px;border-radius:8px;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:500;border:0;transition:opacity .18s}
+  .v2btn--primary{background:#fff;color:#0c1520}
+  .v2btn--primary b{font-weight:700}
+  .v2btn--primary:hover{opacity:.9}
+  .v2btn--ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .v2btn--ghost:hover{background:rgba(255,255,255,.18)}
+
+  /* ===== V2 view toggle ===== */
+  .v2toggle{display:flex;gap:4px;padding:4px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10)}
+  .v2toggle__btn{display:flex;align-items:center;gap:7px;height:36px;padding:0 16px;border-radius:8px;border:0;cursor:pointer;
+    font-family:inherit;font-size:13px;font-weight:500;color:rgba(255,255,255,.55);background:transparent;transition:all .18s}
+  .v2toggle__btn .material-symbols-outlined{font-size:16px}
+  .v2toggle__btn.is-on{background:rgba(255,255,255,.12);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  .v2toggle__btn:hover:not(.is-on){color:rgba(255,255,255,.80);background:rgba(255,255,255,.06)}
+  /* V2 hero redesign */
+  .v2hero__gradient{font-style:italic;font-weight:inherit;
+    background:linear-gradient(90deg,#82ffc3 0%,#38e8ff 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .v2ctas{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;justify-content:center}
+  .v2cta{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 24px;border-radius:10px;
+    font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;border:0;transition:all .18s;white-space:nowrap}
+  .v2cta--primary{background:#fff;color:#0b0f14;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+  .v2cta--primary:hover{background:#f0faf5;box-shadow:0 4px 20px rgba(0,0,0,.30)}
+  .v2cta--ghost{background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .v2cta--ghost:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45)}
+  .v2cta .material-symbols-outlined{font-size:18px}
+  /* V2 hero + guide layout */
+  .screen--2{overflow-y:auto}
+  .v2hero-wrap{height:67vh;min-height:480px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;flex-shrink:0;padding-top:96px}
+  /* Timeline modal */
+  .tl-modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+  .tl-modal-overlay.is-open{opacity:1;pointer-events:auto}
+  /* Modal shell — flex column so footer tabs stick to bottom */
+  .tl-modal{background:#141820;border-radius:20px;width:min(1100px,95vw);max-height:92vh;
+    display:flex;flex-direction:column;overflow:hidden;
+    position:relative;box-shadow:0 32px 96px rgba(0,0,0,.7);
+    transform:translateY(20px);transition:transform .28s cubic-bezier(.22,.68,0,1.2),background .2s}
+  .tl-modal.is-v1{background:rgba(22,28,38,.96);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
+  .tl-modal-overlay.is-open .tl-modal{transform:translateY(0)}
+  /* Modal header */
+  .tl-modal__hd{padding:36px 44px 0;flex-shrink:0}
+  .tl-modal__close{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;border:0;
+    background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:18px;transition:all .15s}
+  .tl-modal__close:hover{background:rgba(255,255,255,.18);color:#fff}
+  .tl-modal__title{font-size:clamp(22px,2.2vw,30px);font-weight:700;color:#fff;margin:0 0 8px;letter-spacing:-.02em}
+  .tl-modal__sub{font-size:14px;color:rgba(255,255,255,.70);margin:0;max-width:none;white-space:nowrap;line-height:1.6}
+  /* Scrollable body */
+  .tl-modal__body{flex:1;overflow-y:auto;padding:28px 44px 0;min-height:0}
+  /* Footer with tabs pinned to bottom-left */
+  .tl-modal__foot{padding:16px 44px 22px;flex-shrink:0;display:flex;align-items:center}
+  /* V1/V2 tabs — subtle, bottom-left */
+  .tl-modal__tabs{display:flex;gap:2px;align-items:center}
+  .tl-modal__tab{height:26px;padding:0 12px;border:0;border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.6px;
+    color:rgba(255,255,255,.22);background:transparent;transition:all .18s}
+  .tl-modal__tab.is-on{color:rgba(255,255,255,.70);background:rgba(255,255,255,.08)}
+  .tl-modal__tab:hover:not(.is-on){color:rgba(255,255,255,.42);background:rgba(255,255,255,.04)}
+  /* ── V1 photo card grid ── */
+  .tl-modal-v1{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-bottom:4px}
+  /* Column wrapper — time label + card */
+  .tl-col{display:flex;flex-direction:column;gap:10px}
+  .tl-col__time{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.4px;color:rgba(255,255,255,.65);padding-left:4px}
+  /* Card: single full-bleed photo with text overlaid on a light scrim */
+  .tl-col__card{position:relative;border-radius:16px;overflow:hidden;height:380px;
+    background-size:cover;background-position:center;
+    box-shadow:0 4px 20px rgba(0,0,0,.28),0 1px 4px rgba(0,0,0,.18)}
+  .tl-col__card--active{box-shadow:0 4px 24px rgba(130,255,195,.18),0 1px 4px rgba(0,0,0,.18)}
+  /* Light gradient scrim — 30% transparent so photo shows through, fades out lower */
+  .tl-col__card::before{content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(232,238,245,.70) 0%,rgba(232,238,245,.66) 30%,rgba(232,238,245,.38) 48%,rgba(232,238,245,0) 64%)}
+  .tl-col__card--active::before{
+    background:linear-gradient(180deg,rgba(226,243,236,.70) 0%,rgba(228,242,237,.66) 30%,rgba(230,243,238,.38) 48%,rgba(232,245,240,0) 64%)}
+  /* Items overlaid on the scrim */
+  .tl-col__items{position:relative;z-index:2;padding:22px 18px;display:flex;flex-direction:column;gap:12px}
+  /* Item row */
+  .tl-col__item{display:flex;align-items:flex-start;gap:9px;font-size:14px;line-height:1.4;color:#0f2340;font-weight:500}
+  .tl-col__item .material-symbols-outlined{font-size:19px;color:#1c3a5e;flex-shrink:0;margin-top:1px}
+  .tl-col__item--locked .material-symbols-outlined{color:#8499b5}
+  .tl-col__item--locked{color:#4d6079}
+  .tl-col__item-wrap{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .tl-col__item-label{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .tl-col__lock-icon{font-size:14px!important;color:#8499b5!important;margin-top:0!important;flex-shrink:0}
+  .tl-col__unlock{font-size:12px;color:#1f6fde;font-style:italic;font-weight:400;line-height:1.3}
+  /* Version toggle (V1 / V2) */
+  .v2ver{display:flex;align-items:center;gap:0;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.15);margin-bottom:4px;align-self:flex-end}
+  .v2ver__btn{height:28px;padding:0 14px;border:0;cursor:pointer;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.5px;
+    color:rgba(255,255,255,.40);background:transparent;transition:all .18s}
+  .v2ver__btn.is-on{background:rgba(255,255,255,.13);color:#82ffc3}
+  .v2ver__btn:hover:not(.is-on){color:rgba(255,255,255,.70);background:rgba(255,255,255,.06)}
+  /* Note card (grey info box inside a phase) */
+  .tl-card--note{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 14px;
+    flex:1 1 100%;min-width:100%;align-items:center;gap:10px}
+  .tl-card--note .tl-card__icon{border-color:rgba(255,255,255,.20)}
+  .tl-card--note .tl-card__icon .material-symbols-outlined{color:rgba(255,255,255,.45)}
+  .tl-card--note .tl-card__title{font-size:13px;font-weight:500;color:rgba(255,255,255,.50)}
+  .tl-card--note .tl-card__sub{color:rgba(255,255,255,.35)}
+  .v2view-panel{width:100%}
+  .v2view-panel[hidden]{display:none}
+  /* Placeholder alt view */
+  .v2alt-placeholder{width:100%;max-width:960px;padding:48px 32px;border-radius:16px;
+    background:rgba(14,17,23,.55);border:1px solid rgba(255,255,255,.09);
+    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+    display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+  .v2alt-placeholder__icon{font-size:32px;color:rgba(130,255,195,.4)}
+  .v2alt-placeholder__title{font-size:16px;font-weight:600;color:rgba(255,255,255,.75)}
+  .v2alt-placeholder__desc{font-size:13px;color:rgba(255,255,255,.40)}
 
   /* ===== Prototype variant switcher ===== */
   /* ===== Prototype dock: variant switcher + background picker ===== */
@@ -257,6 +399,7 @@
      ============================================================ */
   body[data-variant="3"] .main,body[data-variant="4"] .main{overflow:visible;min-height:auto}
   .screen--3{color:#fff}
+  /* screen--3 guide overrides removed — guide-card is always light theme */
   .v3eyebrow{display:inline-flex;align-items:center;gap:11px;font-family:var(--font-mono);font-size:12px;
     letter-spacing:2.6px;text-transform:uppercase;color:#9aa3ae}
   .v3eyebrow__dot{width:9px;height:9px;border-radius:50%;background:#82ffc3;
@@ -271,6 +414,9 @@
   .fixedbg__img.is-blurred{filter:blur(16px) brightness(.9)}
   .fixedbg__scrim{position:fixed;top:0;left:var(--nav-w);width:calc(100vw - var(--nav-w));height:100vh;z-index:0;
     pointer-events:none;background:linear-gradient(180deg,rgba(9,9,9,.5),rgba(9,9,9,.46) 42%,rgba(9,9,9,.64))}
+  body[data-variant="2"] .fixedbg__scrim,
+  body[data-variant="3"] .fixedbg__scrim,
+  body[data-variant="4"] .fixedbg__scrim{background:linear-gradient(180deg,rgba(9,9,9,.28),rgba(9,9,9,.22) 42%,rgba(9,9,9,.38))}
   .v3hero,.guide,.dash{position:relative;z-index:1}
   .v3hero__scrim{position:absolute;inset:0;z-index:0;pointer-events:none;
     background:radial-gradient(120% 75% at 50% 44%,rgba(9,9,9,.30),rgba(9,9,9,0) 68%)}
@@ -280,9 +426,9 @@
     background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
     animation:hdrShimmer 2.8s linear infinite}
   @keyframes hdrShimmer{from{background-position:200% 0}to{background-position:-20% 0}}
-  .v3hero__inner{position:relative;z-index:2;width:100%;max-width:760px;display:flex;flex-direction:column;align-items:center}
-  .v3hero__title{font-size:clamp(30px,4.4vw,52px);line-height:1.06;font-weight:600;letter-spacing:-.5px;margin-top:18px;max-width:15ch}
-  .v3hero__title .accent{font-style:italic;color:#82ffc3;font-weight:600}
+  .v3hero__inner{position:relative;z-index:2;width:100%;max-width:960px;display:flex;flex-direction:column;align-items:center}
+  .v3hero__title{font-size:clamp(32px,3.8vw,56px);line-height:1.06;font-weight:600;letter-spacing:-.5px;margin-top:18px;max-width:22ch;text-align:center}
+  .v3hero__title .accent{font-style:normal;font-weight:600;color:inherit}
 
   .prompts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px;max-width:660px}
   .prompt{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:1000px;cursor:pointer;
@@ -315,74 +461,113 @@
   @keyframes bob{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(5px);opacity:1}}
 
   /* ---- Section 2: Onboarding guide ---- */
-  .guide{padding:clamp(56px,8vh,110px) clamp(22px,4vw,64px)}
-  .guide__head{display:flex;flex-direction:column;gap:16px;margin-bottom:34px}
-  .guide__progress{position:relative;height:4px;border-radius:4px;background:rgba(255,255,255,.10);overflow:hidden}
-  .guide__progress span{position:absolute;inset:0 auto 0 0;width:12%;border-radius:4px;
-    background:linear-gradient(90deg,#37c79a,#82ffc3);box-shadow:0 0 12px rgba(130,255,195,.5)}
-  .guide__pct{font-family:var(--font-mono);font-size:12px;color:#9aa3ae;letter-spacing:.4px}
-  .guide__cols{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:0;align-items:stretch}
+  .guide{padding:clamp(40px,5vh,72px) clamp(22px,4vw,64px)}
+  .guide-card{background:#f6f6f9;border-radius:20px;overflow:hidden;box-shadow:0 4px 28px rgba(0,0,0,.09)}
 
-  .cats{display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:8px 0 0 8px;
-    background:rgba(14,17,23,.42);border:1px solid rgba(255,255,255,.10);border-right:0;
-    -webkit-backdrop-filter:blur(18px) saturate(1.1);backdrop-filter:blur(18px) saturate(1.1)}
-  .cat{position:relative;display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:6px;border:0;
-    cursor:pointer;background:transparent;color:inherit;font:inherit;text-align:left;transition:background .2s}
-  .cat:hover{background:rgba(255,255,255,.04)}
-  .cat.is-viewing{background:rgba(255,255,255,.06)}
-  .cat.is-viewing::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:2px;border-radius:2px;
-    background:#82ffc3;box-shadow:0 0 10px rgba(130,255,195,.55)}
-  .cat__node{position:relative;width:24px;height:24px;flex:0 0 auto;border-radius:50%;border:1px solid rgba(255,255,255,.25);
-    display:flex;align-items:center;justify-content:center;color:#727a86;font-family:var(--font-mono);font-size:11px;transition:.25s}
-  .cat__node .material-symbols-outlined{font-size:15px}
-  .cat.is-done .cat__node{background:#37c79a;border-color:#37c79a;color:#06251c}
-  .cat.is-partial .cat__node{color:#cfd3d9;border-color:rgba(255,255,255,.16)}
-  .cat.is-partial .cat__node::before{content:"";position:absolute;inset:-1px;border-radius:50%;
-    background:conic-gradient(#82ffc3 0 180deg,transparent 180deg 360deg);
-    -webkit-mask:radial-gradient(farthest-side,transparent 60%,#000 61%);
-    mask:radial-gradient(farthest-side,transparent 60%,#000 61%)}
-  .cat.is-active .cat__node{border-color:#82ffc3;color:#82ffc3;
-    box-shadow:0 0 0 4px rgba(130,255,195,.07),0 0 14px rgba(130,255,195,.5);animation:nodeGlow 2.6s ease-in-out infinite}
-  .cat__label{display:flex;flex-direction:column;gap:2px}
-  .cat__name{font-size:16px;font-weight:500;color:#cfd3d9;transition:color .2s}
-  .cat.is-viewing .cat__name,.cat.is-active .cat__name{color:#fff;font-weight:600}
-  .cat__meta{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.6px;color:#727a86}
-  .cat__meta.is-pending{color:#f5a623}
-  .cat__chev{margin-left:auto;color:#727a86;display:flex;opacity:0;transition:.2s}
-  .cat:hover .cat__chev,.cat.is-viewing .cat__chev{opacity:1}
+  /* Top bar */
+  .guide-topbar{display:flex;align-items:center;gap:20px;height:64px;padding:0 24px 0 20px;background:#fff;border-bottom:1px solid #e5e5ed}
+  .guide-topbar__info{display:flex;align-items:baseline;gap:12px;flex:0 0 auto}
+  .guide-topbar__label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c1c6c8}
+  .guide-topbar__hint{font-size:14px;color:#1f1f2e}
+  .guide-topbar__prog{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+  .guide-topbar__track{flex:1;height:6px;border-radius:3px;background:#d5e2ff;overflow:hidden;min-width:0}
+  .guide-topbar__fill{height:100%;background:#002496;border-radius:3px;width:18%}
+  .guide-topbar__pct{font-size:12px;color:#73738c;white-space:nowrap}
 
-  .detail{border:1px solid rgba(255,255,255,.12);border-radius:0 8px 8px 0;padding:clamp(18px,2.2vw,30px);
-    background:rgba(14,17,23,.42);-webkit-backdrop-filter:blur(18px) saturate(1.1);backdrop-filter:blur(18px) saturate(1.1)}
-  .detail__panel{display:none;flex-direction:column}
-  .detail__panel.is-on{display:flex;animation:rise .45s cubic-bezier(.2,.7,.2,1)}
-  .detail__cat{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#82ffc3;margin-bottom:6px}
-  .sub{display:flex;align-items:flex-start;gap:14px;padding:16px 4px;border-top:1px solid rgba(255,255,255,.07)}
-  .sub:first-of-type{border-top:0}
-  .sub__node{margin-top:1px;width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.28);
-    flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#727a86}
-  .sub__node .material-symbols-outlined{font-size:13px}
-  .sub.is-done .sub__node{background:#37c79a;border-color:#37c79a;color:#06251c}
-  .sub__body{display:flex;flex-direction:column;gap:3px}
-  .sub__title{font-size:15px;font-weight:500;color:#e7ecf2;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-  .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;border-radius:3px;padding:2px 6px}
-  .tag--req{color:#f5a623;border:1px solid rgba(245,166,35,.4)}
-  .tag--done{color:#82ffc3;border:1px solid rgba(130,255,195,.4)}
-  .tag--pending{color:#9aa3ae;border:1px solid rgba(255,255,255,.18)}
-  .sub__desc{font-size:13px;color:#9aa3ae;line-height:1.45;max-width:54ch}
-  .sub__go{margin-left:auto;align-self:center;color:#727a86;display:flex}
-  .detail__cta{margin-top:22px}
-  .btn--mint{display:inline-flex;align-items:center;gap:9px;height:46px;padding:0 22px;border-radius:4px;cursor:pointer;
-    font-family:inherit;font-size:15px;font-weight:500;border:0;color:#06251c;
-    background:linear-gradient(120deg,#82ffc3,#37c79a);box-shadow:0 10px 30px rgba(55,199,154,.25)}
-  .btn--mint .material-symbols-outlined{font-size:19px;transition:transform .2s}
+  /* Body layout */
+  .guide-body{display:flex;align-items:stretch;min-height:440px}
+  .guide-vdivider{width:1px;background:#e0e0eb;flex:0 0 1px;align-self:stretch}
+
+  /* Left panel */
+  .guide-lpanel{flex:0 0 300px;background:#fff;padding:44px 32px 32px;display:flex;flex-direction:column;gap:14px}
+  .guide-lpanel__title{font-size:26px;font-weight:600;line-height:1.22;color:#333f48}
+  .guide-lpanel__desc{font-size:13.5px;color:#5c6e72;line-height:1.55}
+
+  /* Center panel (menu) */
+  .guide-cpanel{flex:0 0 380px;background:#f1f5f7;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+  .gmi{display:flex;align-items:center;gap:12px;padding:13px 16px;background:transparent;border-radius:12px;border:0;
+    font:inherit;text-align:left;cursor:pointer;width:100%;
+    box-shadow:none;transition:box-shadow .15s,background .15s}
+  .gmi:hover{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+  .gmi.is-viewing{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.07)}
+  .gmi--inactive{background:transparent;box-shadow:none}
+  .gmi.is-partial{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.06)}
+  .gmi.is-active{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.07)}
+  .gmi__radio{width:20px;height:20px;border-radius:50%;border:1.25px solid #c1c6c8;background:#fff;flex:0 0 auto;transition:border-color .15s}
+  .gmi.is-done .gmi__radio{background:#002496;border-color:#002496;display:flex;align-items:center;justify-content:center;position:relative}
+  .gmi.is-done .gmi__radio::after{content:"";position:absolute;width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(0,-1px)}
+  .gmi__text{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .gmi__title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .gmi__name{font-size:14px;font-weight:500;color:#333f48;line-height:1.3}
+  .gmi__req{font-size:12px;font-style:italic;color:#af6408}
+  .gmi__sub{font-size:13px;color:#5c6e72;line-height:1.4}
+  .gmi__arrow{flex:0 0 16px;display:flex;align-items:center;justify-content:center}
+  .gmi__arrow .material-symbols-outlined{font-size:16px;color:#002496}
+
+  /* Right panel */
+  .guide-rpanel{flex:1;min-width:0;background:#fff;padding:24px 28px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+  .guide-rpanel__head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  .guide-rpanel__cat{font-size:20px;font-weight:600;color:#333f48}
+  .guide-rpanel__count{font-size:13px;color:#c1c6c8}
+  .guide-rpanel__divider{height:1px;background:#e5e5ed;flex-shrink:0;margin:0 -4px}
+  .detail__panel{display:none;flex-direction:column;gap:0}
+  .detail__panel.is-on{display:flex;animation:rise .35s cubic-bezier(.2,.7,.2,1)}
+
+  /* Sub items (light theme) */
+  .sub{display:flex;align-items:flex-start;gap:13px;padding:15px 4px;border-top:1px solid #ebebf0;cursor:pointer;border-radius:6px;transition:background .15s}
+  .sub:first-of-type{border-top:0;padding-top:4px}
+  .sub:hover{background:#f4f7fa;margin:0 -6px;padding-left:10px;padding-right:10px}
+  .sub__node{margin-top:2px;width:18px;height:18px;border-radius:50%;border:1.25px solid #c1c6c8;background:#fff;
+    flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .sub__node .material-symbols-outlined{font-size:12px;color:#fff}
+  .sub.is-done .sub__node{background:#002496;border-color:#002496}
+  .sub__body{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+  .sub__title{font-size:14.5px;font-weight:500;color:#333f48;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tag{font-size:10.5px;font-weight:600;letter-spacing:.5px;border-radius:4px;padding:2px 7px;line-height:1.4}
+  .tag--req{color:#af6408;background:#fff8ec;border:1px solid rgba(175,100,8,.25)}
+  .tag--done{color:#1a7a4a;background:#eaf6f0;border:1px solid rgba(26,122,74,.25)}
+  .tag--pending{color:#7a8a9a;background:#f1f5f7;border:1px solid #d0d8e0}
+  .tag--super{color:#7a8a9a;background:#f1f5f7;border:1px solid #d0d8e0}
+
+  /* ===== Invite modal ===== */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+  .modal-backdrop.is-open{opacity:1;pointer-events:all}
+  .modal{background:#0f1923;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:28px 28px 24px;width:min(420px,90vw);display:flex;flex-direction:column;gap:20px}
+  .modal__title{font-size:16px;font-weight:600;color:#fff;margin:0}
+  .modal__close{position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;color:#9aa3ae;padding:4px}
+  .modal__head{position:relative;display:flex;align-items:center;justify-content:space-between}
+  .modal__field{display:flex;flex-direction:column;gap:6px}
+  .modal__label{font-size:12px;color:#9aa3ae;letter-spacing:.4px}
+  .modal__input{background:#1a2533;border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:10px 12px;font-size:14px;color:#fff;outline:none;transition:border-color .15s}
+  .modal__input:focus{border-color:rgba(130,255,195,.5)}
+  .modal__select{background:#1a2533;border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:10px 12px;font-size:14px;color:#fff;outline:none;appearance:none;cursor:pointer}
+  .modal__footer{display:flex;justify-content:flex-end;gap:10px;padding-top:4px}
+  .modal__btn{padding:9px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:opacity .15s}
+  .modal__btn--cancel{background:rgba(255,255,255,.08);color:#cdd5de}
+  .modal__btn--invite{background:#82ffc3;color:#0a1520;font-weight:600}
+  .modal__btn:hover{opacity:.85}
+  .modal__invited-list{display:flex;flex-direction:column;gap:0;border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden}
+  .modal__invited-head,.modal__invited-row{display:grid;grid-template-columns:1fr 120px 90px;gap:0;font-size:12px}
+  .modal__invited-head{background:rgba(255,255,255,.05);color:#9aa3ae;padding:7px 12px;text-transform:uppercase;letter-spacing:.5px}
+  .modal__invited-row{padding:8px 12px;color:#cdd5de;border-top:1px solid rgba(255,255,255,.06)}
+  .modal__invited-status{color:#f5a623}
+  .invite-hint{font-size:13px;color:#9aa3ae}
+  .sub__desc{font-size:13px;color:#5c6e72;line-height:1.45;max-width:54ch}
+  .sub__go{flex:0 0 auto;align-self:center;color:#002496;display:flex;transition:color .15s}
+  .sub__go .material-symbols-outlined{font-size:18px}
+  .sub:hover .sub__go{color:#001a6e}
+  .detail__cta{padding-top:14px;border-top:1px solid #ebebf0;margin-top:4px}
+  .btn--mint{display:inline-flex;align-items:center;gap:9px;height:44px;padding:0 22px;border-radius:8px;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:600;border:0;color:#fff;
+    background:#002496;box-shadow:0 4px 14px rgba(0,36,150,.25)}
+  .btn--mint .material-symbols-outlined{font-size:18px;transition:transform .2s}
   .btn--mint:hover .material-symbols-outlined{transform:translateX(4px)}
-  .btn--continue{display:inline-flex;align-items:center;gap:9px;height:48px;padding:0 22px;border-radius:4px;cursor:pointer;
-    font-family:inherit;font-size:15px;font-weight:500;color:#e7ecf2;background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.20);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-    transition:background .2s,border-color .2s}
-  .btn--continue:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.34)}
-  .btn--continue .hl{color:#82ffc3;font-weight:600}
-  .btn--continue .material-symbols-outlined{font-size:19px;color:#82ffc3;transition:transform .2s}
+  .btn--continue{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:500;color:#002496;background:#eef4ff;
+    border:1px solid #b8d0ff;transition:background .2s}
+  .btn--continue:hover{background:#ddeaff}
+  .btn--continue .hl{color:#002496;font-weight:700}
+  .btn--continue .material-symbols-outlined{font-size:18px;color:#002496;transition:transform .2s}
   .btn--continue:hover .material-symbols-outlined{transform:translateX(4px)}
 
   /* ---- Section 3: Dashboard preview ---- */
@@ -419,6 +604,24 @@
   .wid__lock .material-symbols-outlined{font-size:20px}
   .wid__lock span{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase}
 
+  /* ── Donut chart widget (filled state) ── */
+  .wid__chart{display:flex;align-items:center;gap:16px;flex:1;margin-top:2px}
+  .dchart{position:relative;width:104px;height:104px;flex:0 0 auto}
+  .dchart__ring{position:absolute;inset:0;border-radius:50%;
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px));
+    animation:donutDraw 1s cubic-bezier(.2,.7,.2,1) both}
+  .dchart__c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .dchart__num{font-size:26px;font-weight:300;color:#fff;line-height:1;font-feature-settings:"tnum"}
+  .dchart__cap{font-size:11px;color:#9aa3ae;margin-top:3px}
+  .dlegend{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+  .dlegend__row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#c4ccd5;
+    background:rgba(255,255,255,.06);border-radius:999px;padding:5px 12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dlegend__dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .dlegend__row b{color:#fff;font-weight:600;font-feature-settings:"tnum"}
+  .dc-mint{background:#82ffc3}.dc-cyan{background:#38e8ff}.dc-amber{background:#f5a623}
+  .dc-red{background:#e0341f}.dc-white{background:rgba(255,255,255,.55)}.dc-grey{background:#566270}
+
   .wid--add{border-style:dashed;border-color:rgba(255,255,255,.18);background:transparent;align-items:center;
     justify-content:center;text-align:center;color:#9aa3ae;cursor:pointer;transition:border-color .2s,color .2s}
   .wid--add:hover{border-color:rgba(130,255,195,.5);color:#cdd3da}
@@ -428,9 +631,9 @@
   .wid__sel .material-symbols-outlined{font-size:18px}
 
   @media (max-width:900px){
-    .guide__cols{grid-template-columns:1fr;gap:14px}
-    .cats{border-radius:8px;border-right:1px solid rgba(255,255,255,.10)}
-    .detail{border-radius:8px}
+    .guide-body{flex-direction:column}
+    .guide-lpanel,.guide-cpanel{flex:0 0 auto;width:100%}
+    .guide-vdivider{width:100%;height:1px;flex:none}
     .dash__grid{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width:620px){
@@ -449,12 +652,12 @@
   body[data-variant="1"] .nav{display:none}
   body[data-variant="1"] .stepbar{left:var(--gutter)}
   .v1logo{position:fixed;top:20px;left:28px;z-index:50;display:none;
-    font-family:var(--font-sans);font-weight:700;font-size:15px;letter-spacing:3.4px;color:#fff;text-transform:uppercase;
+    font-family:var(--font-sans);font-weight:700;font-size:15px;line-height:1.25;letter-spacing:3.4px;color:#fff;text-transform:uppercase;
     text-shadow:0 1px 12px rgba(0,0,0,.55)}
   body[data-variant="1"] .v1logo{display:block}
   .v1account{position:fixed;top:18px;right:18px;z-index:50;display:none;align-items:center;gap:12px}
   body[data-variant="1"] .v1account{display:flex}
-  .v1account__avatar{width:30px;height:30px;border-radius:50%;background:#112d62;border:1px solid rgba(255,255,255,.28);
+  .v1account__avatar{width:30px;height:30px;border-radius:50%;background:transparent;border:1px solid rgba(255,255,255,.28);
     color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;letter-spacing:.5px}
   .v1account__btn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:1000px;cursor:pointer;
     border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#e7ecf2;font-family:inherit;font-size:13px;
@@ -467,7 +670,7 @@
   .tophead__logo{height:15px;width:auto;display:block;filter:drop-shadow(0 1px 10px rgba(0,0,0,.55))}
 
   .minibar{display:flex;align-items:center;gap:24px;height:48px;padding:0 12px 0 24px;border-radius:24px;
-    background:#0f141f;box-shadow:0 12px 34px rgba(0,0,0,.4)}
+    background:linear-gradient(-24.8deg,#153085,#1e44bc,#0366c7);box-shadow:0 12px 34px rgba(0,0,0,.4)}
   .minibar__greet{font-size:16px;line-height:20px;color:#fff;white-space:nowrap}
   .minibar__greet b{font-weight:700}
   .minibar__alerts{display:flex;align-items:center;gap:12px;height:32px;padding:0 16px;border-radius:50px;background:rgba(255,255,255,.1)}
@@ -475,9 +678,9 @@
   .minibar__alerts .alert .material-symbols-outlined{font-size:16px;color:#dde5ee}
   .minibar__alerts .alert--flash .material-symbols-outlined{color:#f5a623}
   .minibar__assistant{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:100px;cursor:pointer;
-    border:1px solid #9affdd;font-family:inherit;font-size:14px;color:#fff;white-space:nowrap;
-    background:linear-gradient(225.5deg,#4d9c76 11.6%,#142735 73.4%);transition:filter .2s}
-  .minibar__assistant:hover{filter:brightness(1.1)}
+    border:0;font-family:inherit;font-size:14px;color:#fff;white-space:nowrap;
+    background:linear-gradient(121deg,rgba(72,237,215,.5),rgba(0,108,214,.5));transition:filter .2s}
+  .minibar__assistant:hover{filter:brightness(1.15)}
   .minibar__assistant .material-symbols-outlined{font-size:16px}
   @media (max-width:900px){ .minibar__greet{display:none} }
   @media (max-width:620px){
@@ -485,6 +688,36 @@
     .minibar{gap:10px;padding:0 8px 0 14px}
     .minibar__alerts{gap:9px;padding:0 10px}
   }
+
+  /* ===== Action pills (V3 hero) ===== */
+  .action-row{display:flex;align-items:center;gap:12px;flex-wrap:nowrap;justify-content:center;margin-top:28px;white-space:nowrap}
+  .action-row__label{font-family:var(--font-sans);font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap;padding-right:4px;border-right:1px solid rgba(255,255,255,.25)}
+  .action-pills{display:flex;align-items:center;gap:10px;flex-wrap:nowrap}
+  .action-pill{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 18px;border-radius:12px;cursor:pointer;
+    background:rgba(20,28,38,.32);border:1px solid rgba(255,255,255,.14);
+    -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+    box-shadow:0 2px 12px rgba(0,0,0,.18);font-family:inherit;font-size:15px;font-weight:600;color:#fff;
+    transition:background .18s,border-color .18s}
+  .action-pill:hover{background:rgba(40,52,66,.42);border-color:rgba(255,255,255,.22)}
+  .action-pill--ghost{background:rgba(20,28,38,.32);border-color:rgba(255,255,255,.14);color:#fff}
+  .action-pill--ghost:hover{background:rgba(40,52,66,.42);border-color:rgba(255,255,255,.22);color:#fff}
+  .action-pill__icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .action-pill__icon--flash{background:#e0341f}
+  .action-pill__icon--red{background:#e0341f}
+  .action-pill__icon--blue{background:#fff}
+  .action-pill__icon .material-symbols-outlined{font-size:14px;color:#fff}
+  .action-pill__icon--blue .material-symbols-outlined{color:#156fcb}
+  .action-sep{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.35);flex:0 0 auto}
+  /* ===== Updated ask bar (Figma style) ===== */
+  .ask--figma{background:rgba(255,255,255,.08);border:1px solid #bedff9;border-radius:999px;
+    padding:8px 8px 8px 8px;-webkit-backdrop-filter:blur(50px);backdrop-filter:blur(50px)}
+  .ask--figma .ask__send{background:linear-gradient(-63deg,#002496,#0073cf,#08cdd8);width:36px;height:36px}
+  .prompts--figma{gap:10px}
+  .prompt--figma{background:linear-gradient(90deg,rgba(73,255,185,.05),rgba(62,199,255,.05));
+    border:1px solid #bedff9;border-radius:24px;color:#fff;display:inline-flex;align-items:center;gap:8px;
+    padding:10px 16px;font-size:14px;cursor:pointer;font-family:inherit;transition:background .18s}
+  .prompt--figma:hover{background:rgba(255,255,255,.12)}
+  .prompt--figma .material-symbols-outlined{font-size:14px;color:#bedff9}
 
   /* ===== Assistant input — flowing gradient outline + landing glow ===== */
   @property --askang{syntax:'<angle>';inherits:false;initial-value:0deg}
@@ -552,6 +785,7 @@
     .v3eyebrow--loading .v3eyebrow__txt,.ask,.ask::before,.donut,.actcard__icon{animation:none}
     .v3eyebrow--loading .v3eyebrow__txt{-webkit-text-fill-color:#cfd3d9;color:#cfd3d9}
   }
+
 </style>
 </head>
 <body data-variant="1">
@@ -566,7 +800,7 @@
     <div class="bg-switch" role="group" aria-label="Background image">
       <button data-bg="forest" data-label="Forest" aria-label="Forest background"><span class="material-symbols-outlined icon-fill">forest</span></button>
       <button data-bg="water" data-label="Water" aria-label="Water background"><span class="material-symbols-outlined icon-fill">water_drop</span></button>
-      <button data-bg="farm" data-label="Farm" aria-label="Farm background"><span class="material-symbols-outlined icon-fill">agriculture</span></button>
+      <button data-bg="farm" data-label="Farm" aria-label="Farm background"><span class="material-symbols-outlined icon-fill">grass</span></button>
     </div>
     <div class="proto-div" aria-hidden="true"></div>
     <div class="time-switch" role="group" aria-label="Time of day">
@@ -612,9 +846,9 @@
         <div class="minibar">
           <span class="minibar__greet">Good morning, <b>Luke</b></span>
           <div class="minibar__alerts">
-            <span class="alert alert--flash"><span class="material-symbols-outlined">bolt</span>2</span>
-            <span class="alert"><span class="material-symbols-outlined">notifications</span>4</span>
-            <span class="alert"><span class="material-symbols-outlined">adjust</span>4</span>
+            <span class="alert alert--flash"><span class="material-symbols-outlined icon-fill">bolt</span>2</span>
+            <span class="alert"><span class="material-symbols-outlined icon-fill">notifications</span>4</span>
+            <span class="alert"><span class="material-symbols-outlined icon-fill">adjust</span>4</span>
           </div>
           <button class="minibar__assistant"><span class="material-symbols-outlined icon-fill">auto_awesome</span>Assistant</button>
         </div>
@@ -631,48 +865,18 @@
             <img class="brand__logo" src="images/logo.png" alt="Brinks">
           </div>
 
-          <h1 class="headline" aria-label="Let's bring your fleet intelligence online">
-            <span class="word" style="--i:0">Let&rsquo;s </span><span class="word" style="--i:1">bring </span><span class="word" style="--i:2">your </span><span class="word" style="--i:3">fleet </span><span class="word" style="--i:4">intelligence </span><span class="word accent" style="--i:5">online</span>
+          <h1 class="headline" aria-label="Welcome Luke, let's bring your fleet intelligence online">
+            <span class="word" style="--i:0">Welcome </span><span class="word accent" style="--i:1">Luke, </span><span class="word" style="--i:2">let&rsquo;s </span><span class="word" style="--i:3">bring </span><span class="word" style="--i:4">your fleet </span><span class="word" style="--i:5">intelligence </span><span class="word accent" style="--i:6">online</span>
           </h1>
 
           <div class="cta-row reveal" style="--d:.95s">
             <button class="btn btn--primary">Connect telematics <span class="material-symbols-outlined">arrow_forward</span></button>
-            <button class="btn btn--ghost"><span class="material-symbols-outlined">person_add</span> Invite admin users</button>
+            <button class="btn btn--ghost" data-invite-trigger><span class="material-symbols-outlined">person_add</span> Invite admin users</button>
           </div>
 
-          <div class="unlock reveal" style="--d:1.05s" aria-label="What unlocks on connect">
-            <span class="unlock__label">On connect</span>
-            <div class="unlock__items">
-              <span class="feat"><span class="material-symbols-outlined">my_location</span>Real-time location tracking</span>
-              <span class="feat"><span class="material-symbols-outlined">notifications_active</span>Predictive alerts</span>
-              <span class="feat"><span class="material-symbols-outlined">auto_awesome</span>Personal assistant</span>
-            </div>
-          </div>
         </div>
       </div>
 
-      <div class="stepbar" role="list" aria-label="Onboarding steps">
-        <button class="cell is-active" data-i="0" role="listitem" aria-label="Step 01: Integrations">
-          <span class="cell__node" aria-hidden="true"></span>
-          <span class="cell__title">Integrations</span>
-        </button>
-        <button class="cell is-upcoming" data-i="1" role="listitem" aria-label="Step 02: Hub">
-          <span class="cell__node" aria-hidden="true"></span>
-          <span class="cell__title">Hub</span>
-        </button>
-        <button class="cell is-upcoming" data-i="2" role="listitem" aria-label="Step 03: Asset Details">
-          <span class="cell__node" aria-hidden="true"></span>
-          <span class="cell__title">Asset Details</span>
-        </button>
-        <button class="cell is-upcoming" data-i="3" role="listitem" aria-label="Step 04: Maintenance">
-          <span class="cell__node" aria-hidden="true"></span>
-          <span class="cell__title">Maintenance</span>
-        </button>
-        <button class="cell is-upcoming" data-i="4" role="listitem" aria-label="Step 05: Users & Permissions">
-          <span class="cell__node" aria-hidden="true"></span>
-          <span class="cell__title">Users &amp; Permissions</span>
-        </button>
-      </div>
       </section>
 
       <!-- Variant 3: Post-Telematics — Connected -->
@@ -682,165 +886,231 @@
 
         <!-- Section 1 · Intelligence hero -->
         <section class="v3hero">
-          
+
           <div class="v3hero__scrim" aria-hidden="true"></div>
           <div class="v3hero__inner">
-            <span class="v3eyebrow v3eyebrow--loading"><span class="v3eyebrow__dot" aria-hidden="true"></span><span class="v3eyebrow__txt">Telematics connecting — retrieving trip history</span></span>
-            <h2 class="v3hero__title">Ask about your fleet <span class="accent">right away</span></h2>
+            <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span><span class="v3eyebrow__txt">Telematics connected &nbsp;|&nbsp; Monitoring 4,000 assets</span></span>
+            <h2 class="v3hero__title">8 new actions since you <span class="accent">last looked</span>, act now</h2>
 
-            <div class="ask">
+            <div class="action-row">
+              <span class="action-row__label">For you</span>
+              <div class="action-pills">
+                <button class="action-pill"><span class="action-pill__icon action-pill__icon--flash"><span class="material-symbols-outlined icon-fill">bolt</span></span>8 net new</button>
+              </div>
+              <span class="action-sep" aria-hidden="true"></span>
+              <button class="action-pill action-pill--ghost">64 auto-assigned to your team</button>
+            </div>
+
+            <div class="ask ask--figma" style="margin-top:28px;max-width:640px;width:100%">
               <span class="ask__spark" aria-hidden="true"><span class="material-symbols-outlined icon-fill">auto_awesome</span></span>
-              <input class="ask__input" type="text" placeholder="Ask anything about your fleet…" aria-label="Ask the assistant">
+              <input class="ask__input" type="text" placeholder="Ask Assistant" aria-label="Ask the assistant">
               <button class="ask__send" aria-label="Send"><span class="material-symbols-outlined">arrow_upward</span></button>
             </div>
 
-            <div class="prompts" role="list">
-              <button class="prompt" role="listitem" data-q="Explain why fleet utilization dropped this week"><span class="material-symbols-outlined">trending_down</span>Explain why fleet utilization dropped this week</button>
-              <button class="prompt" role="listitem" data-q="What are the 5 assets I should pay attention to today?"><span class="material-symbols-outlined">priority_high</span>What are the 5 assets I should pay attention to today?</button>
-              <button class="prompt" role="listitem" data-q="Show today's trips for Truck 107"><span class="material-symbols-outlined">route</span>Show today's trips for Truck 107</button>
+            <div class="prompts prompts--figma" role="list" style="margin-top:10px">
+              <button class="prompt prompt--figma" role="listitem" data-q="What truck should I sell this month?">What truck should I sell this month? <span class="material-symbols-outlined">north_east</span></button>
+              <button class="prompt prompt--figma" role="listitem" data-q="Forecast Q3 maintenance">Forecast Q3 maintenance <span class="material-symbols-outlined">north_east</span></button>
             </div>
           </div>
           <div class="v3scrollcue" aria-hidden="true"><span>Setup guide <b class="cue__pct">12%</b></span><span class="material-symbols-outlined">keyboard_arrow_down</span></div>
         </section>
 
         <!-- Section 2 · Onboarding guide -->
-        <section class="guide">
-          <div class="guide__head">
-            <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span>Setup guide</span>
-            <div class="guide__progress" role="progressbar" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"><span></span></div>
-            <span class="guide__pct">12% complete · Hub is your next step</span>
-          </div>
+        <section class="guide" id="v3-guide">
+          <div class="guide-card">
 
-          <div class="guide__cols">
-            <!-- left: category nav -->
-            <div class="cats" role="tablist" aria-label="Setup categories">
-              <button class="cat is-partial" data-cat="integrations" role="tab" aria-selected="false">
-                <span class="cat__node" aria-hidden="true">1</span>
-                <span class="cat__label"><span class="cat__name">Integrations</span><span class="cat__meta is-pending">1 of 2 · Field card pending</span></span>
-                <span class="cat__chev material-symbols-outlined" aria-hidden="true">chevron_right</span>
-              </button>
-              <button class="cat is-active is-viewing" data-cat="hub" role="tab" aria-selected="true">
-                <span class="cat__node" aria-hidden="true">2</span>
-                <span class="cat__label"><span class="cat__name">Hub</span><span class="cat__meta">Active step</span></span>
-                <span class="cat__chev material-symbols-outlined" aria-hidden="true">chevron_right</span>
-              </button>
-              <button class="cat is-upcoming" data-cat="assets" role="tab" aria-selected="false">
-                <span class="cat__node" aria-hidden="true">3</span>
-                <span class="cat__label"><span class="cat__name">Asset Details</span><span class="cat__meta">4 sub-steps</span></span>
-                <span class="cat__chev material-symbols-outlined" aria-hidden="true">chevron_right</span>
-              </button>
-              <button class="cat is-upcoming" data-cat="maintenance" role="tab" aria-selected="false">
-                <span class="cat__node" aria-hidden="true">4</span>
-                <span class="cat__label"><span class="cat__name">Maintenance</span><span class="cat__meta">6 sub-steps</span></span>
-                <span class="cat__chev material-symbols-outlined" aria-hidden="true">chevron_right</span>
-              </button>
-              <button class="cat is-upcoming" data-cat="permissions" role="tab" aria-selected="false">
-                <span class="cat__node" aria-hidden="true">5</span>
-                <span class="cat__label"><span class="cat__name">Permissions &amp; Users</span><span class="cat__meta">2 sub-steps</span></span>
-                <span class="cat__chev material-symbols-outlined" aria-hidden="true">chevron_right</span>
-              </button>
-            </div>
-
-            <!-- right: sub-steps for active category -->
-            <div class="detail">
-              <div class="detail__panel" data-cat="integrations">
-                <span class="detail__cat">Integrations</span>
-                <div class="sub is-done">
-                  <span class="sub__node" aria-hidden="true"><span class="material-symbols-outlined">check</span></span>
-                  <span class="sub__body"><span class="sub__title">Telematics <span class="tag tag--done">Complete</span></span><span class="sub__desc">Connected and streaming location and engine data.</span></span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Field Card <span class="tag tag--pending">Pending</span></span><span class="sub__desc">Link fuel card transactions to keep spend tied to each asset.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
+            <!-- Top bar -->
+            <div class="guide-topbar">
+              <div class="guide-topbar__info">
+                <span class="guide-topbar__label">Setup guide</span>
+                <span class="guide-topbar__hint">Hub is your next step.</span>
               </div>
-
-              <div class="detail__panel is-on" data-cat="hub">
-                <span class="detail__cat">Hub</span>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Review and customize Hubs <span class="tag tag--req">Required</span></span><span class="sub__desc">Hubs are auto-generated from vehicle data — review our suggestions and make changes.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="detail__cta">
-                  <button class="btn--continue">Continue setup: <span class="hl">Create hub</span> <span class="material-symbols-outlined">arrow_forward</span></button>
-                </div>
-              </div>
-
-              <div class="detail__panel" data-cat="assets">
-                <span class="detail__cat">Asset Details</span>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Add ownership details <span class="tag tag--req">Required</span></span><span class="sub__desc">Track your owned, leased, and rented assets.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Add vehicle registration details</span><span class="sub__desc">Log details to help keep assets current.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Add custom trims</span><span class="sub__desc">Unlock more accurate asset value insights.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Add warranty profiles</span><span class="sub__desc">Keep coverage details organized and easy to find.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-              </div>
-
-              <div class="detail__panel" data-cat="maintenance">
-                <span class="detail__cat">Maintenance</span>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Add your shop network</span><span class="sub__desc">Enter locations to keep repair routing simple.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Customize preventive maintenance</span><span class="sub__desc">Set schedules that match how you maintain your fleet.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Upload inspection records</span><span class="sub__desc">Track when next inspection dates are coming up.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Set up vendor payment</span><span class="sub__desc">Pay vendors through Digital Fleet.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Set spending limits</span><span class="sub__desc">Choose a dollar threshold for automatic work order approvals.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Add service history</span><span class="sub__desc">Upload past repairs so techs can diagnose faster and records stay accurate.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-              </div>
-
-              <div class="detail__panel" data-cat="permissions">
-                <span class="detail__cat">Permissions &amp; Users</span>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Customize permissions</span><span class="sub__desc">Set what each role can see and do across your fleet.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
-                <div class="sub">
-                  <span class="sub__node" aria-hidden="true"></span>
-                  <span class="sub__body"><span class="sub__title">Invite users</span><span class="sub__desc">Bring your team into Digital Fleet.</span></span>
-                  <span class="sub__go material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </div>
+              <div class="guide-topbar__prog">
+                <div class="guide-topbar__track"><div class="guide-topbar__fill"></div></div>
+                <span class="guide-topbar__pct">3/17 · 18%</span>
               </div>
             </div>
-          </div>
+
+            <!-- Body -->
+            <div class="guide-body">
+
+              <!-- Left panel -->
+              <div class="guide-lpanel">
+                <h3 class="guide-lpanel__title">Finish onboarding your fleet</h3>
+                <p class="guide-lpanel__desc">14 steps remaining. Complete setup to unlock predictive alerts, lifecycle insights, and team-wide visibility across your hubs.</p>
+              </div>
+
+              <div class="guide-vdivider"></div>
+
+              <!-- Center: category menu -->
+              <div class="guide-cpanel" role="tablist" aria-label="Setup categories">
+                <button class="gmi is-partial" data-cat="integrations" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Integrations</span><span class="gmi__req">Required</span></span>
+                    <span class="gmi__sub">1 of 2 · Field card pending</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi is-active is-viewing" data-cat="hub" role="tab" aria-selected="true">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Hubs</span><span class="gmi__req">Required</span></span>
+                    <span class="gmi__sub">Active step</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="assets" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Asset Details</span></span>
+                    <span class="gmi__sub">4 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="maintenance" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Maintenance</span></span>
+                    <span class="gmi__sub">6 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="permissions" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Permissions &amp; Users</span></span>
+                    <span class="gmi__sub">2 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+              </div>
+
+              <div class="guide-vdivider"></div>
+
+              <!-- Right: sub-step detail -->
+              <div class="guide-rpanel">
+
+                <div class="detail__panel" data-cat="integrations">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Integrations</span>
+                    <span class="guide-rpanel__count">1 of 2 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub is-done">
+                    <span class="sub__node"><span class="material-symbols-outlined icon-fill">check</span></span>
+                    <span class="sub__body"><span class="sub__title">Telematics <span class="tag tag--done">Complete</span></span><span class="sub__desc">Connected and streaming location and engine data.</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Field Card <span class="tag tag--pending">Pending</span></span><span class="sub__desc">Link fuel card transactions to keep spend tied to each asset.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel is-on" data-cat="hub">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Hubs</span>
+                    <span class="guide-rpanel__count">0 of 1 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Review and customize Hubs <span class="tag tag--req">Required</span></span><span class="sub__desc">Hubs are auto-generated from vehicle data — review our suggestions and make changes.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="detail__cta">
+                    <button class="btn--continue">Continue setup: <span class="hl">Create hub</span> <span class="material-symbols-outlined">arrow_forward</span></button>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="assets">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Asset Details</span>
+                    <span class="guide-rpanel__count">0 of 4 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add ownership details <span class="tag tag--req">Required</span></span><span class="sub__desc">Track your owned, leased, and rented assets.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add vehicle registration details</span><span class="sub__desc">Log details to help keep assets current.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add custom trims</span><span class="sub__desc">Unlock more accurate asset value insights.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add warranty profiles</span><span class="sub__desc">Keep coverage details organized and easy to find.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="maintenance">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Maintenance</span>
+                    <span class="guide-rpanel__count">0 of 6 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add your shop network</span><span class="sub__desc">Enter locations to keep repair routing simple.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Customize preventive maintenance</span><span class="sub__desc">Set schedules that match how you maintain your fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Upload inspection records</span><span class="sub__desc">Track when next inspection dates are coming up.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Set up vendor payment</span><span class="sub__desc">Pay vendors through Digital Fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Set spending limits</span><span class="sub__desc">Choose a dollar threshold for automatic work order approvals.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add service history</span><span class="sub__desc">Upload past repairs so techs can diagnose faster and records stay accurate.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="permissions">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Permissions &amp; Users</span>
+                    <span class="guide-rpanel__count">0 of 2 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Customize permissions</span><span class="sub__desc">Set what each role can see and do across your fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Invite users</span><span class="sub__desc">Bring your team into Digital Fleet.</span></span>
+                    <span class="sub__go" data-invite-trigger><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+              </div><!-- /guide-rpanel -->
+            </div><!-- /guide-body -->
+          </div><!-- /guide-card -->
         </section>
 
         <!-- Section 3 · Dashboard preview -->
@@ -884,29 +1154,32 @@
               </div>
             </div>
 
-            <!-- 4 · Asset Health (locked) -->
+            <!-- 4 · Asset category (locked) -->
             <div class="wid wid--locked">
-              <div class="wid__title">Asset Health</div>
+              <div class="wid__title">Asset category</div>
               <div class="wid__skel">
                 <div class="wid__donut" aria-hidden="true"></div>
                 <div class="wid__lock"><span class="material-symbols-outlined">lock</span><span>Complete setup to unlock</span></div>
               </div>
             </div>
 
-            <!-- 5 · Registration (locked) -->
+            <!-- 5 · Power unit size (locked) -->
             <div class="wid wid--locked">
-              <div class="wid__title">Registration</div>
+              <div class="wid__title">Power unit size</div>
               <div class="wid__skel">
-                <div class="wid__rows" aria-hidden="true"><i style="width:80%"></i><i style="width:60%"></i><i style="width:70%"></i></div>
+                <div class="wid__donut" aria-hidden="true"></div>
                 <div class="wid__lock"><span class="material-symbols-outlined">lock</span><span>Complete setup to unlock</span></div>
               </div>
             </div>
 
-            <!-- 6 · Add widget -->
-            <button class="wid wid--add">
-              <span class="wid__plus material-symbols-outlined" aria-hidden="true">add</span>
-              <span class="wid__sel">Select a widget <span class="material-symbols-outlined">expand_more</span></span>
-            </button>
+            <!-- 6 · Asset ownership mix (locked) -->
+            <div class="wid wid--locked">
+              <div class="wid__title">Asset ownership mix</div>
+              <div class="wid__skel">
+                <div class="wid__donut" aria-hidden="true"></div>
+                <div class="wid__lock"><span class="material-symbols-outlined">lock</span><span>Complete setup to unlock</span></div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -917,32 +1190,246 @@
         <img class="fixedbg__img" data-bgimg src="" alt="" aria-hidden="true">
         <div class="fixedbg__scrim" aria-hidden="true"></div>
 
-        <!-- Activity hero -->
-        <section class="v3hero v4hero">
+        <!-- Section 1 · Intelligence hero -->
+        <section class="v3hero">
+          
           <div class="v3hero__scrim" aria-hidden="true"></div>
           <div class="v3hero__inner">
-            <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span>Live · monitoring 4,560 assets</span>
-            <h2 class="v3hero__title">8 new actions since you last looked</h2>
-            <p class="v4hero__sub">2 net new · 3 escalated · 3 assigned to you <span class="material-symbols-outlined">north_east</span></p>
+            <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span><span class="v3eyebrow__txt">Telematics connected &nbsp;|&nbsp; Monitoring 4,000 assets</span></span>
+            <h2 class="v3hero__title">8 new actions since you <span class="accent">last looked</span>, act now</h2>
 
-            <div class="ask">
+            <div class="action-row">
+              <span class="action-row__label">For you</span>
+              <div class="action-pills">
+                <button class="action-pill"><span class="action-pill__icon action-pill__icon--flash"><span class="material-symbols-outlined icon-fill">bolt</span></span>8 net new</button>
+                <button class="action-pill"><span class="action-pill__icon action-pill__icon--red"><span class="material-symbols-outlined icon-fill">keyboard_double_arrow_up</span></span>2 escalated</button>
+                <button class="action-pill"><span class="action-pill__icon action-pill__icon--blue"><span class="material-symbols-outlined icon-fill">group_add</span></span>5 assigned to you</button>
+              </div>
+              <span class="action-sep" aria-hidden="true"></span>
+              <button class="action-pill action-pill--ghost">64 auto-assigned to your team</button>
+            </div>
+
+            <div class="ask ask--figma" style="margin-top:28px;max-width:640px;width:100%">
               <span class="ask__spark" aria-hidden="true"><span class="material-symbols-outlined icon-fill">auto_awesome</span></span>
-              <input class="ask__input" type="text" placeholder="Ask anything about your fleet…" aria-label="Ask the assistant">
+              <input class="ask__input" type="text" placeholder="Ask Assistant" aria-label="Ask the assistant">
               <button class="ask__send" aria-label="Send"><span class="material-symbols-outlined">arrow_upward</span></button>
             </div>
+
+            <div class="prompts prompts--figma" role="list" style="margin-top:10px">
+              <button class="prompt prompt--figma" role="listitem" data-q="What truck should I sell this month?">What truck should I sell this month? <span class="material-symbols-outlined">north_east</span></button>
+              <button class="prompt prompt--figma" role="listitem" data-q="Forecast Q3 maintenance">Forecast Q3 maintenance <span class="material-symbols-outlined">north_east</span></button>
+            </div>
           </div>
-          <div class="v3scrollcue" aria-hidden="true">Dashboard<span class="material-symbols-outlined">keyboard_arrow_down</span></div>
+          <div class="v3scrollcue" aria-hidden="true"><span>Setup guide <b class="cue__pct">12%</b></span><span class="material-symbols-outlined">keyboard_arrow_down</span></div>
         </section>
 
-        <!-- Full dashboard (all widgets live) -->
+        <!-- Section 2 · Onboarding guide -->
+        <section class="guide" id="v4-guide">
+          <div class="guide-card">
+
+            <!-- Top bar -->
+            <div class="guide-topbar">
+              <div class="guide-topbar__info">
+                <span class="guide-topbar__label">Setup guide</span>
+                <span class="guide-topbar__hint">Hub is your next step.</span>
+              </div>
+              <div class="guide-topbar__prog">
+                <div class="guide-topbar__track"><div class="guide-topbar__fill"></div></div>
+                <span class="guide-topbar__pct">3/17 · 18%</span>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="guide-body">
+
+              <!-- Left panel -->
+              <div class="guide-lpanel">
+                <h3 class="guide-lpanel__title">Finish onboarding your fleet</h3>
+                <p class="guide-lpanel__desc">14 steps remaining. Complete setup to unlock predictive alerts, lifecycle insights, and team-wide visibility across your hubs.</p>
+              </div>
+
+              <div class="guide-vdivider"></div>
+
+              <!-- Center: category menu -->
+              <div class="guide-cpanel" role="tablist" aria-label="Setup categories">
+                <button class="gmi is-partial" data-cat="v4-integrations" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Integrations</span><span class="gmi__req">Required</span></span>
+                    <span class="gmi__sub">1 of 2 · Field card pending</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi is-active is-viewing" data-cat="v4-hub" role="tab" aria-selected="true">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Hubs</span><span class="gmi__req">Required</span></span>
+                    <span class="gmi__sub">Active step</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="v4-assets" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Asset Details</span></span>
+                    <span class="gmi__sub">4 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="v4-maintenance" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Maintenance</span></span>
+                    <span class="gmi__sub">6 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="v4-permissions" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Permissions &amp; Users</span></span>
+                    <span class="gmi__sub">2 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+              </div>
+
+              <div class="guide-vdivider"></div>
+
+              <!-- Right: sub-step detail -->
+              <div class="guide-rpanel">
+
+                <div class="detail__panel" data-cat="v4-integrations">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Integrations</span>
+                    <span class="guide-rpanel__count">1 of 2 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub is-done">
+                    <span class="sub__node"><span class="material-symbols-outlined icon-fill">check</span></span>
+                    <span class="sub__body"><span class="sub__title">Telematics <span class="tag tag--done">Complete</span></span><span class="sub__desc">Connected and streaming location and engine data.</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Field Card <span class="tag tag--pending">Pending</span></span><span class="sub__desc">Link fuel card transactions to keep spend tied to each asset.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel is-on" data-cat="v4-hub">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Hubs</span>
+                    <span class="guide-rpanel__count">0 of 1 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Review and customize Hubs <span class="tag tag--req">Required</span></span><span class="sub__desc">Hubs are auto-generated from vehicle data — review our suggestions and make changes.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="detail__cta">
+                    <button class="btn--continue">Continue setup: <span class="hl">Create hub</span> <span class="material-symbols-outlined">arrow_forward</span></button>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="v4-assets">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Asset Details</span>
+                    <span class="guide-rpanel__count">0 of 4 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add ownership details <span class="tag tag--req">Required</span></span><span class="sub__desc">Track your owned, leased, and rented assets.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add vehicle registration details</span><span class="sub__desc">Log details to help keep assets current.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add custom trims</span><span class="sub__desc">Unlock more accurate asset value insights.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add warranty profiles</span><span class="sub__desc">Keep coverage details organized and easy to find.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="v4-maintenance">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Maintenance</span>
+                    <span class="guide-rpanel__count">0 of 6 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add your shop network</span><span class="sub__desc">Enter locations to keep repair routing simple.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Customize preventive maintenance</span><span class="sub__desc">Set schedules that match how you maintain your fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Upload inspection records</span><span class="sub__desc">Track when next inspection dates are coming up.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Set up vendor payment</span><span class="sub__desc">Pay vendors through Digital Fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Set spending limits</span><span class="sub__desc">Choose a dollar threshold for automatic work order approvals.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add service history</span><span class="sub__desc">Upload past repairs so techs can diagnose faster and records stay accurate.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="v4-permissions">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Permissions &amp; Users</span>
+                    <span class="guide-rpanel__count">0 of 2 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Customize permissions</span><span class="sub__desc">Set what each role can see and do across your fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Invite users</span><span class="sub__desc">Bring your team into Digital Fleet.</span></span>
+                    <span class="sub__go" data-invite-trigger><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+              </div><!-- /guide-rpanel -->
+            </div><!-- /guide-body -->
+          </div><!-- /guide-card -->
+        </section>
+
+        <!-- Section 3 · Dashboard preview -->
         <section class="dash">
           <div class="dash__head">
-            <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span>Dashboard</span>
-            <p class="dash__sub">Your fleet at a glance — everything live.</p>
+            <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span>Dashboard preview</span>
+            <p class="dash__sub">Asset Status is live now. The rest unlock as you complete setup.</p>
           </div>
 
           <div class="dash__grid">
-            <!-- 1 · Asset Status -->
+            <!-- 1 · Asset Status (live) -->
             <div class="wid">
               <div class="wid__title">Asset Status <span class="wid__live">Live</span></div>
               <div class="asset__total"><span class="asset__num">128</span><span class="asset__cap">total assets</span></div>
@@ -957,84 +1444,621 @@
               </div>
             </div>
 
-            <!-- 2 · Active Work Order -->
+            <!-- 2 · DVIR (live) -->
             <div class="wid">
-              <div class="wid__title">Active Work Order</div>
-              <div class="donutwrap">
-                <div class="donutfig">
-                  <div class="donut" style="background:conic-gradient(#82ffc3 0 162deg,#566270 162deg 270deg,rgba(255,255,255,.2) 270deg 324deg,#ef6947 324deg 360deg)"></div>
-                  <div class="donut__c"><b>40</b><span>open</span></div>
+              <div class="wid__title">DVIR <span class="wid__live">Live</span></div>
+              <div class="wid__chart">
+                <div class="dchart">
+                  <div class="dchart__ring" style="background:conic-gradient(#e0341f 0 6%,#f5a623 6% 12%,rgba(255,255,255,.55) 12% 100%)"></div>
+                  <div class="dchart__c"><span class="dchart__num">12</span><span class="dchart__cap">Failed</span></div>
                 </div>
                 <div class="dlegend">
-                  <span><i class="dot seg-ok"></i>In progress <b>18</b></span>
-                  <span><i class="dot seg-mut"></i>Scheduled <b>12</b></span>
-                  <span><i class="dot seg-faint"></i>Unscheduled <b>6</b></span>
-                  <span><i class="dot seg-warn"></i>Overdue <b>4</b></span>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-red"></i><span><b>12</b> Failed DVIR</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-amber"></i><span>Passed w/ non-critical defects</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-white"></i><span><b>976</b> Passed DVIR</span></div>
                 </div>
               </div>
             </div>
 
-            <!-- 3 · DVIR -->
+            <!-- 3 · Active Work Order (live) -->
             <div class="wid">
-              <div class="wid__title">DVIR</div>
-              <div class="donutwrap">
-                <div class="donutfig">
-                  <div class="donut" style="background:conic-gradient(#82ffc3 0 310deg,#566270 310deg 342deg,#ef6947 342deg 360deg)"></div>
-                  <div class="donut__c"><b>128</b><span>checks</span></div>
+              <div class="wid__title">Active Work Order <span class="wid__live">Live</span></div>
+              <div class="wid__chart">
+                <div class="dchart">
+                  <div class="dchart__ring" style="background:conic-gradient(#f5a623 0 50%,#38e8ff 50% 75%,#82ffc3 75% 100%)"></div>
+                  <div class="dchart__c"><span class="dchart__num">24</span><span class="dchart__cap">Open</span></div>
                 </div>
                 <div class="dlegend">
-                  <span><i class="dot seg-ok"></i>Passed <b>110</b></span>
-                  <span><i class="dot seg-mut"></i>Missing <b>12</b></span>
-                  <span><i class="dot seg-warn"></i>Failed <b>6</b></span>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-amber"></i><span><b>24</b> Open</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-cyan"></i><span><b>12</b> In progress</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-mint"></i><span><b>60</b> Closed</span></div>
                 </div>
               </div>
             </div>
 
-            <!-- 4 · Asset Health -->
+            <!-- 4 · Asset category (live) -->
             <div class="wid">
-              <div class="wid__title">Asset Health</div>
-              <div class="donutwrap">
-                <div class="donutfig">
-                  <div class="donut" style="background:conic-gradient(#82ffc3 0 292deg,#566270 292deg 342deg,#ef6947 342deg 360deg)"></div>
-                  <div class="donut__c"><b>128</b><span>assets</span></div>
+              <div class="wid__title">Asset category <span class="wid__live">Live</span></div>
+              <div class="wid__chart">
+                <div class="dchart">
+                  <div class="dchart__ring" style="background:conic-gradient(#82ffc3 0 54.7%,#38e8ff 54.7% 84.4%,#f5a623 84.4% 93.8%,rgba(255,255,255,.55) 93.8% 100%)"></div>
+                  <div class="dchart__c"><span class="dchart__num">128</span><span class="dchart__cap">assets</span></div>
                 </div>
                 <div class="dlegend">
-                  <span><i class="dot seg-ok"></i>Healthy <b>104</b></span>
-                  <span><i class="dot seg-mut"></i>Need review <b>18</b></span>
-                  <span><i class="dot seg-warn"></i>Immediate <b>6</b></span>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-mint"></i><span><b>70</b> Power unit</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-cyan"></i><span><b>38</b> Trailer</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-amber"></i><span><b>12</b> Passenger</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-white"></i><span><b>8</b> Other</span></div>
                 </div>
               </div>
             </div>
 
-            <!-- 5 · Registration -->
+            <!-- 5 · Power unit size (live) -->
             <div class="wid">
-              <div class="wid__title">Registration</div>
-              <div class="reglist">
-                <div class="regrow"><i class="dot seg-ok"></i>Valid <b>118</b></div>
-                <div class="regrow"><i class="dot seg-warn"></i>Expiring soon <b>7</b></div>
-                <div class="regrow"><i class="dot seg-warn"></i>Expired <b>3</b></div>
+              <div class="wid__title">Power unit size <span class="wid__live">Live</span></div>
+              <div class="wid__chart">
+                <div class="dchart">
+                  <div class="dchart__ring" style="background:conic-gradient(#82ffc3 0 28.6%,#f5a623 28.6% 74.3%,#e0341f 74.3% 100%)"></div>
+                  <div class="dchart__c"><span class="dchart__num">70</span><span class="dchart__cap">units</span></div>
+                </div>
+                <div class="dlegend">
+                  <div class="dlegend__row"><i class="dlegend__dot dc-mint"></i><span><b>20</b> Light</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-amber"></i><span><b>32</b> Medium</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-red"></i><span><b>18</b> Heavy</span></div>
+                </div>
               </div>
             </div>
 
-            <!-- 6 · Add widget -->
-            <button class="wid wid--add">
-              <span class="wid__plus material-symbols-outlined" aria-hidden="true">add</span>
-              <span class="wid__sel">Select a widget <span class="material-symbols-outlined">expand_more</span></span>
-            </button>
+            <!-- 6 · Asset ownership mix (live) -->
+            <div class="wid">
+              <div class="wid__title">Asset ownership mix <span class="wid__live">Live</span></div>
+              <div class="wid__chart">
+                <div class="dchart">
+                  <div class="dchart__ring" style="background:conic-gradient(#82ffc3 0 50%,#38e8ff 50% 71.9%,#f5a623 71.9% 89.1%,rgba(255,255,255,.55) 89.1% 100%)"></div>
+                  <div class="dchart__c"><span class="dchart__num">128</span><span class="dchart__cap">assets</span></div>
+                </div>
+                <div class="dlegend">
+                  <div class="dlegend__row"><i class="dlegend__dot dc-mint"></i><span><b>64</b> Owned</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-cyan"></i><span><b>28</b> FSL</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-amber"></i><span><b>22</b> Finance</span></div>
+                  <div class="dlegend__row"><i class="dlegend__dot dc-white"></i><span><b>14</b> Rented</span></div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
+
+      </section>
+      </section>
+
+      <!-- Variant 2: Loading — Telematics connecting -->
+      <section class="screen screen--2">
+
+    <!-- Hero section (full viewport) -->
+    <div class="v2hero-wrap">
+    <img class="fixedbg__img" data-bgimg src="" alt="" aria-hidden="true">
+    <div class="fixedbg__scrim" aria-hidden="true"></div>
+
+    <div class="v2hero">
+      <span class="v3eyebrow v3eyebrow--loading">
+        <span class="v3eyebrow__dot" aria-hidden="true"></span>
+        <span class="v3eyebrow__txt">Telematics connecting &nbsp;— &nbsp;Retrieving history data</span>
+      </span>
+      <h1 class="headline" style="text-align:center;max-width:none">Almost ready! Your<br><span class="v2hero__gradient">fleet intelligence</span> is loading.</h1>
+
+      <div class="cta-row" style="margin-top:30px">
+        <button class="btn btn--primary" id="v2-open-guide">Continue set up: <b>Add ownership data</b> <span class="material-symbols-outlined">arrow_forward</span></button>
+        <button class="btn btn--ghost" id="v2-open-modal"><span class="material-symbols-outlined">schedule</span> When can I start seeing data?</button>
+      </div>
+
+    </div><!-- /v2hero -->
+    </div><!-- /v2hero-wrap -->
+
+        <!-- Section 2 · Onboarding guide -->
+        <section class="guide" id="v2b-guide">
+          <div class="guide-card">
+
+            <!-- Top bar -->
+            <div class="guide-topbar">
+              <div class="guide-topbar__info">
+                <span class="guide-topbar__label">Setup guide</span>
+                <span class="guide-topbar__hint">Hub is your next step.</span>
+              </div>
+              <div class="guide-topbar__prog">
+                <div class="guide-topbar__track"><div class="guide-topbar__fill"></div></div>
+                <span class="guide-topbar__pct">3/17 · 18%</span>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="guide-body">
+
+              <!-- Left panel -->
+              <div class="guide-lpanel">
+                <h3 class="guide-lpanel__title">Finish onboarding your fleet</h3>
+                <p class="guide-lpanel__desc">14 steps remaining. Complete setup to unlock predictive alerts, lifecycle insights, and team-wide visibility across your hubs.</p>
+              </div>
+
+              <div class="guide-vdivider"></div>
+
+              <!-- Center: category menu -->
+              <div class="guide-cpanel" role="tablist" aria-label="Setup categories">
+                <button class="gmi is-partial" data-cat="v2b-integrations" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Integrations</span><span class="gmi__req">Required</span></span>
+                    <span class="gmi__sub">1 of 2 · Field card pending</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi is-active is-viewing" data-cat="v2b-hub" role="tab" aria-selected="true">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Hubs</span><span class="gmi__req">Required</span></span>
+                    <span class="gmi__sub">Active step</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="v2b-assets" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Asset Details</span></span>
+                    <span class="gmi__sub">4 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="v2b-maintenance" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Maintenance</span></span>
+                    <span class="gmi__sub">6 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="v2b-permissions" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Permissions &amp; Users</span></span>
+                    <span class="gmi__sub">2 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+              </div>
+
+              <div class="guide-vdivider"></div>
+
+              <!-- Right: sub-step detail -->
+              <div class="guide-rpanel">
+
+                <div class="detail__panel" data-cat="v2b-integrations">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Integrations</span>
+                    <span class="guide-rpanel__count">1 of 2 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub is-done">
+                    <span class="sub__node"><span class="material-symbols-outlined icon-fill">check</span></span>
+                    <span class="sub__body"><span class="sub__title">Telematics <span class="tag tag--done">Complete</span></span><span class="sub__desc">Connected and streaming location and engine data.</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Field Card <span class="tag tag--pending">Pending</span></span><span class="sub__desc">Link fuel card transactions to keep spend tied to each asset.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel is-on" data-cat="v2b-hub">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Hubs</span>
+                    <span class="guide-rpanel__count">0 of 1 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Review and customize Hubs <span class="tag tag--req">Required</span></span><span class="sub__desc">Hubs are auto-generated from vehicle data — review our suggestions and make changes.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="detail__cta">
+                    <button class="btn--continue">Continue setup: <span class="hl">Create hub</span> <span class="material-symbols-outlined">arrow_forward</span></button>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="v2b-assets">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Asset Details</span>
+                    <span class="guide-rpanel__count">0 of 4 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add ownership details <span class="tag tag--req">Required</span></span><span class="sub__desc">Track your owned, leased, and rented assets.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add vehicle registration details</span><span class="sub__desc">Log details to help keep assets current.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add custom trims</span><span class="sub__desc">Unlock more accurate asset value insights.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add warranty profiles</span><span class="sub__desc">Keep coverage details organized and easy to find.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="v2b-maintenance">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Maintenance</span>
+                    <span class="guide-rpanel__count">0 of 6 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add your shop network</span><span class="sub__desc">Enter locations to keep repair routing simple.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Customize preventive maintenance</span><span class="sub__desc">Set schedules that match how you maintain your fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Upload inspection records</span><span class="sub__desc">Track when next inspection dates are coming up.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Set up vendor payment</span><span class="sub__desc">Pay vendors through Digital Fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Set spending limits</span><span class="sub__desc">Choose a dollar threshold for automatic work order approvals.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add service history</span><span class="sub__desc">Upload past repairs so techs can diagnose faster and records stay accurate.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+                <div class="detail__panel" data-cat="v2b-permissions">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Permissions &amp; Users</span>
+                    <span class="guide-rpanel__count">0 of 2 completed</span>
+                  </div>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Customize permissions</span><span class="sub__desc">Set what each role can see and do across your fleet.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Invite users</span><span class="sub__desc">Bring your team into Digital Fleet.</span></span>
+                    <span class="sub__go" data-invite-trigger><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
+              </div><!-- /guide-rpanel -->
+            </div><!-- /guide-body -->
+          </div><!-- /guide-card -->
+        </section>
+
+        <!-- Section 3 · Dashboard preview -->
+        <section class="dash">
+          <div class="dash__head">
+            <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span>Dashboard preview</span>
+            <p class="dash__sub">Asset Status is live now. The rest unlock as you complete setup.</p>
+          </div>
+
+          <div class="dash__grid">
+            <!-- 1 · Asset Status (live) -->
+            <div class="wid">
+              <div class="wid__title">Asset Status <span class="wid__live">Live</span></div>
+              <div class="asset__total"><span class="asset__num">128</span><span class="asset__cap">total assets</span></div>
+              <div class="asset__bar" aria-hidden="true">
+                <i class="seg-a" style="width:75%"></i><i class="seg-m" style="width:14%"></i><i class="seg-i" style="width:7%"></i><i class="seg-o" style="width:4%"></i>
+              </div>
+              <div class="asset__legend">
+                <span><i class="dot seg-a"></i>Active <b>96</b></span>
+                <span><i class="dot seg-m"></i>Maintenance <b>18</b></span>
+                <span><i class="dot seg-i"></i>Inactive <b>9</b></span>
+                <span><i class="dot seg-o"></i>Other <b>5</b></span>
+              </div>
+            </div>
+
+            <!-- 2 · Active Work Order (locked) -->
+            <div class="wid wid--locked">
+              <div class="wid__title">Active Work Order</div>
+              <div class="wid__skel">
+                <div class="wid__donut" aria-hidden="true"></div>
+                <div class="wid__lock"><span class="material-symbols-outlined">lock</span><span>Complete setup to unlock</span></div>
+              </div>
+            </div>
+
+            <!-- 3 · DVIR (locked) -->
+            <div class="wid wid--locked">
+              <div class="wid__title">DVIR</div>
+              <div class="wid__skel">
+                <div class="wid__donut" aria-hidden="true"></div>
+                <div class="wid__lock"><span class="material-symbols-outlined">lock</span><span>Complete setup to unlock</span></div>
+              </div>
+            </div>
+
+            <!-- 4 · Asset category (locked) -->
+            <div class="wid wid--locked">
+              <div class="wid__title">Asset category</div>
+              <div class="wid__skel">
+                <div class="wid__donut" aria-hidden="true"></div>
+                <div class="wid__lock"><span class="material-symbols-outlined">lock</span><span>Complete setup to unlock</span></div>
+              </div>
+            </div>
+
+            <!-- 5 · Power unit size (locked) -->
+            <div class="wid wid--locked">
+              <div class="wid__title">Power unit size</div>
+              <div class="wid__skel">
+                <div class="wid__donut" aria-hidden="true"></div>
+                <div class="wid__lock"><span class="material-symbols-outlined">lock</span><span>Complete setup to unlock</span></div>
+              </div>
+            </div>
+
+            <!-- 6 · Asset ownership mix (locked) -->
+            <div class="wid wid--locked">
+              <div class="wid__title">Asset ownership mix</div>
+              <div class="wid__skel">
+                <div class="wid__donut" aria-hidden="true"></div>
+                <div class="wid__lock"><span class="material-symbols-outlined">lock</span><span>Complete setup to unlock</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+    <!-- Timeline modal -->
+    <div class="tl-modal-overlay" id="v2-tl-modal" role="dialog" aria-modal="true" aria-label="When can I start seeing data?">
+      <div class="tl-modal">
+        <button class="tl-modal__close" id="v2-modal-close" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+
+        <!-- Header -->
+        <div class="tl-modal__hd">
+          <h3 class="tl-modal__title">When can I start seeing data?</h3>
+          <p class="tl-modal__sub">Data begins appearing shortly after setup and continues to populate over time. Timing varies based on fleet size and data volume.</p>
+        </div>
+
+        <!-- Scrollable body -->
+        <div class="tl-modal__body">
+
+          <!-- V1: horizontal 4-column photo card grid -->
+          <div id="v2-modal-v1">
+            <div class="tl-modal-v1">
+
+              <!-- Col 1: 30 mins – 1 hr (ACTIVE) -->
+              <div class="tl-col">
+                <div class="tl-col__time">30 mins – 1 hr</div>
+                <div class="tl-col__card tl-col__card--active" style="background-image:url('images/1.png')">
+                  <div class="tl-col__items">
+                    <div class="tl-col__item">
+                      <span class="material-symbols-outlined">map</span>
+                      <span>Live assets on map</span>
+                    </div>
+                    <div class="tl-col__item">
+                      <span class="material-symbols-outlined">local_shipping</span>
+                      <span>Decoded vehicle info</span>
+                    </div>
+                    <div class="tl-col__item">
+                      <span class="material-symbols-outlined">settings</span>
+                      <span>Incoming faults</span>
+                    </div>
+                    <div class="tl-col__item">
+                      <span class="material-symbols-outlined">warning</span>
+                      <span>Safety events</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Col 2: 2 – 5 hrs -->
+              <div class="tl-col">
+                <div class="tl-col__time">2 – 5 hrs</div>
+                <div class="tl-col__card" style="background-image:url('images/2.png')">
+                  <div class="tl-col__items">
+                    <div class="tl-col__item">
+                      <span class="material-symbols-outlined">warning</span>
+                      <span>Predictive breakdowns</span>
+                    </div>
+                    <div class="tl-col__item tl-col__item--locked">
+                      <span class="material-symbols-outlined">trending_up</span>
+                      <div class="tl-col__item-wrap">
+                        <div class="tl-col__item-label">
+                          <span>Lifecycle insights</span>
+                          <span class="material-symbols-outlined tl-col__lock-icon">lock</span>
+                        </div>
+                        <span class="tl-col__unlock">Add ownership data to unlock</span>
+                      </div>
+                    </div>
+                    <div class="tl-col__item tl-col__item--locked">
+                      <span class="material-symbols-outlined">trending_up</span>
+                      <div class="tl-col__item-wrap">
+                        <div class="tl-col__item-label">
+                          <span>Cost analysis</span>
+                          <span class="material-symbols-outlined tl-col__lock-icon">lock</span>
+                        </div>
+                        <span class="tl-col__unlock">Add service history to unlock</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Col 3: 1-2 days -->
+              <div class="tl-col">
+                <div class="tl-col__time">1-2 days</div>
+                <div class="tl-col__card" style="background-image:url('images/3.png')">
+                  <div class="tl-col__items">
+                    <div class="tl-col__item">
+                      <span class="material-symbols-outlined">map</span>
+                      <span>Auto generated hubs</span>
+                    </div>
+                    <div class="tl-col__item tl-col__item--locked">
+                      <span class="material-symbols-outlined">trending_up</span>
+                      <div class="tl-col__item-wrap">
+                        <div class="tl-col__item-label">
+                          <span>Benchmarking insights</span>
+                          <span class="material-symbols-outlined tl-col__lock-icon">lock</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tl-col__item tl-col__item--locked">
+                      <span class="material-symbols-outlined">person</span>
+                      <div class="tl-col__item-wrap">
+                        <div class="tl-col__item-label">
+                          <span>Invite team</span>
+                          <span class="material-symbols-outlined tl-col__lock-icon">lock</span>
+                        </div>
+                        <span class="tl-col__unlock">Set up hub to invite team</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Col 4: 7 – 10 days -->
+              <div class="tl-col">
+                <div class="tl-col__time">7 – 10 days</div>
+                <div class="tl-col__card" style="background-image:url('images/4.png')">
+                  <div class="tl-col__items">
+                    <div class="tl-col__item tl-col__item--locked">
+                      <span class="material-symbols-outlined">map</span>
+                      <div class="tl-col__item-wrap">
+                        <div class="tl-col__item-label">
+                          <span>Historical fuel spend</span>
+                          <span class="material-symbols-outlined tl-col__lock-icon">lock</span>
+                        </div>
+                        <span class="tl-col__unlock">Add fuel card to unlock</span>
+                      </div>
+                    </div>
+                    <div class="tl-col__item tl-col__item--locked">
+                      <span class="material-symbols-outlined">trending_up</span>
+                      <div class="tl-col__item-wrap">
+                        <div class="tl-col__item-label">
+                          <span>Enhanced cost per mile</span>
+                          <span class="material-symbols-outlined tl-col__lock-icon">lock</span>
+                        </div>
+                        <span class="tl-col__unlock">Add fuel card to unlock</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div><!-- /v2-modal-v1 -->
+
+        <!-- V2: dark accordion timeline -->
+        <div id="v2-modal-timeline" hidden>
+          <!-- Phase 01 · 30 min – 1 hr -->
+          <div class="tl-phase is-open" data-phase="1">
+            <div class="tl-phase__hd">
+              <div class="tl-phase__meta"><span class="tl-phase__num">Phase 01</span><div class="tl-phase__dashes"><span></span><span></span><span></span></div></div>
+              <div class="tl-phase__title"><span class="tl-phase__time">30 MIN — 1 HR</span><span class="tl-phase__sub">Your fleet goes live</span></div>
+              <div class="tl-phase__right">
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">my_location</span></div>
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">local_shipping</span></div>
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">security</span></div>
+                <span class="tl-phase__count">4</span>
+                <span class="tl-phase__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              </div>
+            </div>
+            <div class="tl-phase__body">
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">my_location</span></span><div class="tl-card__text"><span class="tl-card__title">Live assets</span><span class="tl-card__sub">Every vehicle's real-time location on the map.</span></div></div>
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">local_shipping</span></span><div class="tl-card__text"><span class="tl-card__title">Decoded vehicle info</span><span class="tl-card__sub">Make, model &amp; specs decoded off the wire.</span></div></div>
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">warning</span></span><div class="tl-card__text"><span class="tl-card__title">Incoming faults</span><span class="tl-card__sub">Issues surfaced as they happen.</span></div></div>
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">security</span></span><div class="tl-card__text"><span class="tl-card__title">Safety events</span><span class="tl-card__sub">Harsh driving &amp; incidents flagged.</span></div></div>
+            </div>
+          </div>
+          <!-- Phase 02 · 2 – 5 hrs -->
+          <div class="tl-phase" data-phase="2">
+            <div class="tl-phase__hd">
+              <div class="tl-phase__meta"><span class="tl-phase__num">Phase 02</span><div class="tl-phase__dashes"><span></span><span></span><span></span></div></div>
+              <div class="tl-phase__title"><span class="tl-phase__time">2 — 5 HRS</span><span class="tl-phase__sub">Intelligence deepens</span></div>
+              <div class="tl-phase__right">
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">sensors</span></div>
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">rotate_90_degrees_ccw</span></div>
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">monitoring</span></div>
+                <span class="tl-phase__count">3</span>
+                <span class="tl-phase__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              </div>
+            </div>
+            <div class="tl-phase__body">
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">sensors</span></span><div class="tl-card__text"><span class="tl-card__title">Predictive breakdowns</span><span class="tl-card__sub">Early warnings before failures occur.</span></div></div>
+              <div class="tl-card tl-card--input"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">lock</span></span><div class="tl-card__text"><span class="tl-card__title">Lifecycle insights</span><span class="tl-card__sub">Begins once ownership &amp; lease info is added.</span></div></div>
+              <div class="tl-card tl-card--input"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">lock</span></span><div class="tl-card__text"><span class="tl-card__title">Cost analytics</span><span class="tl-card__sub">Populates once service history is uploaded.</span></div></div>
+            </div>
+          </div>
+          <!-- Phase 03 · 1 – 2 days -->
+          <div class="tl-phase" data-phase="3">
+            <div class="tl-phase__hd">
+              <div class="tl-phase__meta"><span class="tl-phase__num">Phase 03</span><div class="tl-phase__dashes"><span></span><span></span><span></span></div></div>
+              <div class="tl-phase__title"><span class="tl-phase__time">1 — 2 DAYS</span><span class="tl-phase__sub">Your fleet, benchmarked</span></div>
+              <div class="tl-phase__right">
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">hub</span></div>
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">insights</span></div>
+                <span class="tl-phase__count">3</span>
+                <span class="tl-phase__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              </div>
+            </div>
+            <div class="tl-phase__body">
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">hub</span></span><div class="tl-card__text"><span class="tl-card__title">Customize hubs</span><span class="tl-card__sub">Historical backfill complete — hubs ready to configure.</span></div></div>
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">insights</span></span><div class="tl-card__text"><span class="tl-card__title">Benchmarking insights</span><span class="tl-card__sub">Fleet performance vs. industry benchmarks.</span></div></div>
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">person_add</span></span><div class="tl-card__text"><span class="tl-card__title">Invite your team</span><span class="tl-card__sub">Assign users to hubs once configured.</span></div></div>
+            </div>
+          </div>
+          <!-- Phase 04 · 7 – 10 days -->
+          <div class="tl-phase" data-phase="4">
+            <div class="tl-phase__hd">
+              <div class="tl-phase__meta"><span class="tl-phase__num">Phase 04</span><div class="tl-phase__dashes"><span></span><span></span><span></span></div></div>
+              <div class="tl-phase__title"><span class="tl-phase__time">7 — 10 DAYS</span><span class="tl-phase__sub">Cost analytics unlocked</span></div>
+              <div class="tl-phase__right">
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">local_gas_station</span></div>
+                <div class="tl-phase__icon-bubble"><span class="material-symbols-outlined">calculate</span></div>
+                <span class="tl-phase__count">3</span>
+                <span class="tl-phase__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              </div>
+            </div>
+            <div class="tl-phase__body">
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">local_gas_station</span></span><div class="tl-card__text"><span class="tl-card__title">Historical fuel spend</span><span class="tl-card__sub">View fuel spend within cost dashboard.</span></div></div>
+              <div class="tl-card"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">calculate</span></span><div class="tl-card__text"><span class="tl-card__title">Enhanced cost per mile</span><span class="tl-card__sub">Actual fuel spend calculations in Lifecycle.</span></div></div>
+              <div class="tl-card tl-card--note"><span class="tl-card__icon"><span class="material-symbols-outlined icon-fill">info</span></span><div class="tl-card__text"><span class="tl-card__title">Varies by provider — Comdata &amp; Wex typically 7–10 days</span></div></div>
+            </div>
+          </div>
+        </div><!-- /v2-modal-timeline -->
+
+        </div><!-- /tl-modal__body -->
+
+        <!-- Footer: V1/V2 toggle pinned bottom-left -->
+        <div class="tl-modal__foot">
+          <div class="tl-modal__tabs" role="tablist">
+            <button class="tl-modal__tab is-on" data-mver="v1" role="tab">V1</button>
+            <button class="tl-modal__tab" data-mver="v2" role="tab">V2</button>
+          </div>
+        </div>
+
+      </div><!-- /tl-modal -->
+    </div><!-- /tl-modal-overlay -->
+
       </section>
     </main>
   </div>
-
-  <!-- Variant 2: Loading — immersive, no nav (placeholder) -->
-  <section class="screen screen--2">
-    <div class="ph">
-      <span class="ph__tag">Variant 2</span>
-      <p class="ph__t">Bringing your fleet intelligence online</p>
-      <p class="ph__s">Ambient loading state — building next.</p>
-    </div>
-  </section>
   <script>
   (function(){
     var bar=document.querySelector('.stepbar');
@@ -1080,9 +2104,70 @@
   </script>
   <script>
   (function(){
+    // V2 modal timeline accordion
+    var modalPhases=Array.prototype.slice.call(document.querySelectorAll('#v2-modal-timeline .tl-phase'));
+    modalPhases.forEach(function(ph){
+      var hd=ph.querySelector('.tl-phase__hd');
+      if(hd) hd.addEventListener('click',function(){
+        var isOpen=ph.classList.contains('is-open');
+        modalPhases.forEach(function(p){p.classList.remove('is-open');});
+        if(!isOpen) ph.classList.add('is-open');
+      });
+    });
+
+    // V2 modal open / close
+    var modalOverlay=document.getElementById('v2-tl-modal');
+    var modalOpenBtn=document.getElementById('v2-open-modal');
+    var modalCloseBtn=document.getElementById('v2-modal-close');
+    function openModal(){ if(modalOverlay) modalOverlay.classList.add('is-open'); }
+    function closeModal(){ if(modalOverlay) modalOverlay.classList.remove('is-open'); }
+    if(modalOpenBtn) modalOpenBtn.addEventListener('click', openModal);
+    if(modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+    if(modalOverlay) modalOverlay.addEventListener('click',function(e){ if(e.target===modalOverlay) closeModal(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeModal(); });
+
+    // "Continue set up" → scroll to setup guide
+    var openGuideBtn=document.getElementById('v2-open-guide');
+    if(openGuideBtn) openGuideBtn.addEventListener('click',function(){
+      var g=document.getElementById('v2b-guide'); if(g) g.scrollIntoView({behavior:'smooth'});
+    });
+
+    // Modal V1/V2 tab toggle
+    var mverBtns=Array.prototype.slice.call(document.querySelectorAll('.tl-modal__tab'));
+    var mverPanels={ v1: document.getElementById('v2-modal-v1'), v2: document.getElementById('v2-modal-timeline') };
+    function setMver(ver){
+      mverBtns.forEach(function(b){ b.classList.toggle('is-on', b.getAttribute('data-mver')===ver); });
+      Object.keys(mverPanels).forEach(function(k){ if(mverPanels[k]) mverPanels[k].hidden=(k!==ver); });
+      var modal=document.querySelector('#v2-tl-modal .tl-modal');
+      if(modal) modal.classList.toggle('is-v1', ver==='v1');
+    }
+    mverBtns.forEach(function(b){ b.addEventListener('click', function(){ setMver(b.getAttribute('data-mver')); }); });
+
+    // V2 scrollcue → scroll to guide
+    var v2screen=document.querySelector('.screen--2');
+    if(v2screen){ var v2cue=v2screen.querySelector('.v3scrollcue');
+      if(v2cue){ v2cue.style.cursor='pointer'; v2cue.addEventListener('click',function(){
+        var g=document.getElementById('v2b-guide'); if(g) g.scrollIntoView({behavior:'smooth'});
+      }); }
+    }
+
+    // V2 guide category switching (now uses v2b- prefixed cats)
+    var v2altCats=Array.prototype.slice.call(document.querySelectorAll('#v2b-guide .gmi'));
+    var v2altPanels=Array.prototype.slice.call(document.querySelectorAll('#v2b-guide .detail__panel'));
+    v2altCats.forEach(function(c){
+      c.addEventListener('click',function(){
+        var key=c.getAttribute('data-cat');
+        v2altCats.forEach(function(x){ var on=x===c; x.classList.toggle('is-viewing',on); x.setAttribute('aria-selected',on?'true':'false'); });
+        v2altPanels.forEach(function(p){ p.classList.toggle('is-on',p.getAttribute('data-cat')===key); });
+      });
+    });
+  })();
+  </script>
+  <script>
+  (function(){
     var scope=document.querySelector('.screen--3');
     if(!scope) return;
-    var cats=Array.prototype.slice.call(scope.querySelectorAll('.cat'));
+    var cats=Array.prototype.slice.call(scope.querySelectorAll('.gmi'));
     var panels=Array.prototype.slice.call(scope.querySelectorAll('.detail__panel'));
     cats.forEach(function(c){
       c.addEventListener('click',function(){
@@ -1096,14 +2181,14 @@
       });
     });
     var input=scope.querySelector('.ask__input');
-    scope.querySelectorAll('.prompt').forEach(function(p){
+    scope.querySelectorAll('.prompt--figma').forEach(function(p){
       p.addEventListener('click',function(){
-        if(input){ input.value=p.getAttribute('data-q')||p.textContent.trim(); input.focus(); }
+        if(input){ input.value=p.getAttribute('data-q')||''; input.focus(); }
       });
     });
     var cue=scope.querySelector('.v3scrollcue');
     if(cue){ cue.style.cursor='pointer'; cue.addEventListener('click',function(){
-      var g=scope.querySelector('.guide'); if(g) g.scrollIntoView({behavior:'smooth'});
+      var g=document.getElementById('v3-guide'); if(g) g.scrollIntoView({behavior:'smooth'});
     }); }
   })();
   </script>
@@ -1119,8 +2204,18 @@
     });
     var cue=scope.querySelector('.v3scrollcue');
     if(cue){ cue.style.cursor='pointer'; cue.addEventListener('click',function(){
-      var d=scope.querySelector('.dash'); if(d) d.scrollIntoView({behavior:'smooth'});
+      var g=scope.querySelector('#v4-guide'); if(g) g.scrollIntoView({behavior:'smooth'});
     }); }
+    // V4 guide category switching
+    var v4cats=Array.prototype.slice.call(scope.querySelectorAll('#v4-guide .gmi'));
+    var v4panels=Array.prototype.slice.call(scope.querySelectorAll('#v4-guide .detail__panel'));
+    v4cats.forEach(function(c){
+      c.addEventListener('click',function(){
+        var key=c.getAttribute('data-cat');
+        v4cats.forEach(function(x){ var on=x===c; x.classList.toggle('is-viewing',on); x.setAttribute('aria-selected',on?'true':'false'); });
+        v4panels.forEach(function(p){ p.classList.toggle('is-on',p.getAttribute('data-cat')===key); });
+      });
+    });
   })();
   </script>
 <script>window.FLEET_BG={forest:{day:"images/forest-day.jpg",night:"images/forest-night.jpg"},water:{day:"images/water-day.jpg",night:"images/water-night.jpg"},farm:{day:"images/farm-day.jpg",night:"images/farm-night.jpg"}};</script>
@@ -1162,5 +2257,102 @@
     update();
   })();
   </script>
+
+  <!-- Invite modal -->
+  <div class="modal-backdrop" id="inviteModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modalTitle">Invite a user</h2>
+        <button class="modal__close" id="modalClose" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="modal__field">
+        <label class="modal__label" for="inviteEmail">Email address</label>
+        <input class="modal__input" id="inviteEmail" type="email" placeholder="name@company.com" autocomplete="off">
+      </div>
+      <div class="modal__field">
+        <label class="modal__label" for="inviteRole">Role</label>
+        <select class="modal__select" id="inviteRole">
+          <option value="super" selected>Super user</option>
+          <option value="admin">Admin</option>
+          <option value="viewer">Viewer</option>
+        </select>
+      </div>
+      <div id="invitedTableWrap" style="display:none">
+        <div class="modal__invited-list">
+          <div class="modal__invited-head"><span>Email</span><span>Role</span><span>Status</span></div>
+          <div id="invitedRows"></div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="modal__btn modal__btn--cancel" id="modalCancel">Cancel</button>
+        <button class="modal__btn modal__btn--invite" id="modalInviteBtn">Send invite</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    var invitees = [];
+    var modal = document.getElementById('inviteModal');
+    var emailInput = document.getElementById('inviteEmail');
+    var roleInput = document.getElementById('inviteRole');
+    var invitedTableWrap = document.getElementById('invitedTableWrap');
+    var invitedRows = document.getElementById('invitedRows');
+
+    function roleLabel(val){
+      return val==='super'?'Super user':val==='admin'?'Admin':'Viewer';
+    }
+
+    function renderTable(){
+      if(invitees.length===0){ invitedTableWrap.style.display='none'; return; }
+      invitedTableWrap.style.display='block';
+      invitedRows.innerHTML = invitees.map(function(inv){
+        return '<div class="modal__invited-row"><span>'+inv.email+'</span><span>'+roleLabel(inv.role)+'</span><span class="modal__invited-status">Pending</span></div>';
+      }).join('');
+    }
+
+    function openModal(){
+      emailInput.value='';
+      roleInput.value='super';
+      renderTable();
+      modal.classList.add('is-open');
+      setTimeout(function(){ emailInput.focus(); }, 100);
+    }
+
+    function closeModal(){
+      modal.classList.remove('is-open');
+    }
+
+    function updateInviteHints(){
+      var count = invitees.length;
+      document.querySelectorAll('.invite-hint').forEach(function(el){ el.remove(); });
+      if(count>0){
+        document.querySelectorAll('[data-invite-trigger]').forEach(function(btn){
+          var hint = document.createElement('span');
+          hint.className='invite-hint';
+          hint.textContent = count + ' invited';
+          btn.parentNode.insertBefore(hint, btn.nextSibling);
+        });
+      }
+    }
+
+    document.querySelectorAll('[data-invite-trigger]').forEach(function(btn){
+      btn.addEventListener('click', openModal);
+    });
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e){ if(e.target===modal) closeModal(); });
+
+    document.getElementById('modalInviteBtn').addEventListener('click', function(){
+      var email = emailInput.value.trim();
+      if(!email) { emailInput.focus(); return; }
+      invitees.push({ email: email, role: roleInput.value });
+      updateInviteHints();
+      closeModal();
+    });
+  })();
+  </script>
+
 </body>
 </html>
