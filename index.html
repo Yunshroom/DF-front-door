@@ -365,7 +365,7 @@
   /* ===== Prototype dock: variant switcher + background picker ===== */
   .proto-dock{position:fixed;top:50%;right:12px;transform:translateY(-50%);z-index:120;
     display:flex;flex-direction:column;align-items:center;gap:8px}
-  .proto-switch,.bg-switch,.time-switch{display:flex;flex-direction:column;align-items:center;gap:7px}
+  .proto-switch,.bg-switch,.time-switch,.ver-switch{display:flex;flex-direction:column;align-items:center;gap:7px}
   .proto-div{width:14px;height:1px;background:rgba(255,255,255,.16);margin:1px 0}
   .proto-dock button{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;
     border:1px solid transparent;background:transparent;color:rgba(255,255,255,.5);
@@ -669,8 +669,34 @@
   .tophead__for{font-family:var(--font-sans);font-weight:700;font-size:12px;letter-spacing:2.4px;color:#fff}
   .tophead__logo{height:15px;width:auto;display:block;filter:drop-shadow(0 1px 10px rgba(0,0,0,.55))}
 
-  .minibar{display:flex;align-items:center;gap:24px;height:48px;padding:0 12px 0 24px;border-radius:24px;
-    background:linear-gradient(-24.8deg,#153085,#1e44bc,#0366c7);box-shadow:0 12px 34px rgba(0,0,0,.4)}
+  .minibar{position:relative;display:flex;align-items:center;gap:24px;height:48px;padding:0 12px 0 24px;border-radius:24px;
+    background:linear-gradient(-24.8deg,#153085,#1e44bc,#0366c7);box-shadow:0 12px 34px rgba(0,0,0,.4);
+    transition:box-shadow .3s ease,transform .2s cubic-bezier(.22,1,.36,1)}
+  /* Gemini-style AI halo — blurred conic ring, one smooth constant-velocity clockwise spin on hover */
+  @property --halo-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+  .minibar::before{content:"";position:absolute;inset:-2px;border-radius:25px;padding:3px;pointer-events:none;
+    background:conic-gradient(from var(--halo-angle),#38e8ff,#1f8fff,#8b5cf6,#82ffc3,#38e8ff);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    filter:blur(3px) saturate(1.25);opacity:0;transition:opacity .35s ease}
+  .minibar:hover{transform:translateY(-1px);
+    box-shadow:0 12px 34px rgba(0,0,0,.4),0 6px 22px rgba(31,143,255,.42),0 4px 30px rgba(130,255,195,.28)}
+  /* Press feedback: quick squeeze on the enter curve */
+  .minibar:active{transform:translateY(0) scale(.99);transition:transform .1s cubic-bezier(.22,1,.36,1)}
+  /* Constant-velocity clockwise spin (--halo-angle rises = conic pattern rotates clockwise) */
+  .minibar:hover::before{opacity:1;animation:halo-spin 7s linear infinite}
+  .minibar__assistant:hover .material-symbols-outlined{animation:star-shine .9s ease both}
+  @keyframes halo-spin{to{--halo-angle:360deg}}
+  /* Shine: dim down, then shine bright once (no rotation, no loop) */
+  @keyframes star-shine{
+    0%{opacity:1;filter:drop-shadow(0 0 0 rgba(190,245,255,0))}
+    35%{opacity:.4;filter:drop-shadow(0 0 0 rgba(190,245,255,0))}
+    70%{opacity:1;filter:drop-shadow(0 0 7px rgba(190,245,255,.95))}
+    100%{opacity:1;filter:drop-shadow(0 0 0 rgba(190,245,255,0))}}
+  @media (prefers-reduced-motion:reduce){
+    .minibar:hover::before,
+    .minibar__assistant:hover .material-symbols-outlined{animation:none}}
   .minibar__greet{font-size:16px;line-height:20px;color:#fff;white-space:nowrap}
   .minibar__greet b{font-weight:700}
   .minibar__alerts{display:flex;align-items:center;gap:12px;height:32px;padding:0 16px;border-radius:50px;background:rgba(255,255,255,.1)}
@@ -679,8 +705,9 @@
   .minibar__alerts .alert--flash .material-symbols-outlined{color:#f5a623}
   .minibar__assistant{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:100px;cursor:pointer;
     border:0;font-family:inherit;font-size:14px;color:#fff;white-space:nowrap;
-    background:linear-gradient(121deg,rgba(72,237,215,.5),rgba(0,108,214,.5));transition:filter .2s}
+    background:linear-gradient(121deg,#348fc3 5%,#006cd6 61%);transition:filter .2s,transform .1s cubic-bezier(.22,1,.36,1)}
   .minibar__assistant:hover{filter:brightness(1.15)}
+  .minibar__assistant:active{transform:scale(.96)}
   .minibar__assistant .material-symbols-outlined{font-size:16px}
   @media (max-width:900px){ .minibar__greet{display:none} }
   @media (max-width:620px){
@@ -786,6 +813,338 @@
     .v3eyebrow--loading .v3eyebrow__txt{-webkit-text-fill-color:#cfd3d9;color:#cfd3d9}
   }
 
+  /* ============================================================
+     SMART PANEL — the minibar expands into this side panel on click
+     ============================================================ */
+  .minibar{cursor:pointer}
+  body.sp-open .minibar{opacity:0;pointer-events:none;transition:opacity .12s ease}
+  /* Scrim: dim only, NO blur */
+  .sp-scrim{position:fixed;inset:0;background:rgba(2,8,28,.28);opacity:0;pointer-events:none;
+    transition:opacity .35s ease;z-index:60}
+  .sp-scrim.is-open{opacity:1;pointer-events:auto}
+  /* Panel: full height, 24px margins. The morph between minibar ⇄ side panel ⇄ full screen
+     is driven by the View Transitions API (see the @supports block below); the transform-FLIP
+     path is kept only as a fallback for browsers without view transitions. */
+  .smartpanel{position:fixed;top:24px;right:24px;bottom:24px;z-index:70;
+    left:max(24px,calc(100vw - 498px));
+    display:flex;flex-direction:column;border-radius:24px;overflow:hidden;
+    font-family:var(--font-sans,'Roboto',system-ui,sans-serif);
+    background:linear-gradient(180deg,#1d3f97 0%,#0a235f 52%,#01103a 100%);
+    box-shadow:0 24px 70px rgba(0,0,0,.55),0 6px 22px rgba(0,0,0,.4);
+    border:1px solid rgba(255,255,255,.1);
+    opacity:0;pointer-events:none;transform-origin:top left}
+  .smartpanel.is-open{opacity:1;pointer-events:auto}
+  /* Expanded full-screen: clears the 68px left rail with a 24px gap, 24px on the other sides */
+  .smartpanel.is-full{left:92px}
+
+  /* ---- Morph engine: transform-FLIP between minibar ⇄ panel ⇄ full screen ----
+     JS collapses the panel onto the minibar footprint, then animates transform back to
+     identity. Move/ease-out curve; enter 360ms, exit a touch quicker (280ms). The
+     full-screen toggle only changes `left`, transitioned on the same curve. */
+  .smartpanel{transition:transform .36s cubic-bezier(.25,1,.5,1),left .36s cubic-bezier(.25,1,.5,1),opacity .18s ease}
+  .smartpanel.sp-closing{transition:transform .28s cubic-bezier(.25,1,.5,1),opacity .14s ease}
+  /* Inner content cross-fades in once the surface has settled */
+  .sp-head,.sp-body,.sp-foot{transition:opacity .26s ease .1s}
+  /* Open: hide content instantly before the expand morph (the rule above fades it back in) */
+  .smartpanel.sp-morphing .sp-head,
+  .smartpanel.sp-morphing .sp-body,
+  .smartpanel.sp-morphing .sp-foot{opacity:0;transition:opacity .1s ease}
+  /* Close: dissolve content across the whole collapse so it fades out with the morph
+     instead of blinking out early and leaving an empty shell to shrink */
+  .smartpanel.sp-closing .sp-head,
+  .smartpanel.sp-closing .sp-body,
+  .smartpanel.sp-closing .sp-foot{opacity:0;transition:opacity .26s ease}
+  /* Reduced motion: skip the transform/left morph, keep a quick opacity fade only */
+  @media (prefers-reduced-motion:reduce){
+    .smartpanel,.smartpanel.sp-closing{transition:opacity .12s ease}
+    .sp-head,.sp-body,.sp-foot{transition:opacity .12s ease}
+  }
+
+  /* Header */
+  .sp-head{padding:18px 20px 0;flex:0 0 auto}
+  .sp-head__top{display:flex;align-items:center;gap:10px}
+  .sp-greet{display:inline-flex;align-items:center;gap:8px;font-size:16px;color:#fff;white-space:nowrap}
+  .sp-greet b{font-weight:700}
+  .sp-greet .material-symbols-outlined{font-size:20px;color:#ffd23f}
+  .sp-head__spacer{flex:1}
+  .sp-assistant{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:100px;
+    border:0;font-family:inherit;font-size:13px;font-weight:500;color:#fff;cursor:pointer;
+    background:linear-gradient(121deg,#348fc3 5%,#1c7fe0 90%);
+    transition:filter .18s,transform .1s cubic-bezier(.22,1,.36,1)}
+  .sp-assistant:hover{filter:brightness(1.12)}
+  .sp-assistant:active{transform:scale(.96)}
+  .sp-assistant .material-symbols-outlined{font-size:15px}
+  .sp-close,.sp-expand{width:30px;height:30px;border:0;background:transparent;color:#cdd8ee;cursor:pointer;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;transition:background .18s,color .18s}
+  .sp-close:hover,.sp-expand:hover{background:rgba(255,255,255,.12);color:#fff}
+  .sp-expand svg{width:18px;height:18px;display:block;transition:transform .26s cubic-bezier(.25,1,.5,1)}
+  .sp-expand.is-full svg{transform:scaleX(-1)}
+  /* Segmented toggle */
+  .sp-seg{position:relative;display:flex;gap:4px;margin:16px 0 4px;padding:4px;border-radius:100px;background:rgba(255,255,255,.1)}
+  /* Sliding active pill: one indicator that translates between equal-width segments */
+  .sp-seg::before{content:"";position:absolute;z-index:0;top:4px;bottom:4px;left:4px;width:calc((100% - 12px)/2);
+    border-radius:100px;background:#fff;
+    transform:translateX(calc(var(--seg-i,0) * (100% + 4px)));
+    transition:transform .28s cubic-bezier(.25,1,.5,1)}
+  .sp-seg__btn{position:relative;z-index:1;flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;border:0;cursor:pointer;
+    border-radius:100px;font-family:inherit;font-size:14px;color:#cdd8ee;background:transparent;transition:color .2s}
+  .sp-seg__btn .material-symbols-outlined{font-size:18px}
+  .sp-seg__btn.is-active{color:#002496;font-weight:500}
+  .sp-seg__badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+    border-radius:100px;font-size:12px;font-weight:500;background:rgba(255,255,255,.18);color:#fff}
+  .sp-seg__btn.is-active .sp-seg__badge{background:#ECF1F5;color:#002496}
+
+  /* ---- Version B docked tabs ---- */
+  .sp-tabsB{display:none;flex-direction:column;gap:10px;margin:16px 0 4px}
+  .sp-tabsB__row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .sp-tabsB__foryou{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:#fff}
+  .sp-tabsB__badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+    border-radius:100px;font-size:12px;font-weight:500;background:rgba(255,255,255,.18);color:#fff}
+  .sp-tabsB__viewall{display:inline-flex;align-items:center;gap:2px;border:0;cursor:pointer;background:transparent;
+    font-family:inherit;font-size:13px;color:#cdd8ee;padding:0;transition:color .18s}
+  .sp-tabsB__viewall:hover{color:#fff}
+  .sp-tabsB__viewall .material-symbols-outlined{font-size:18px}
+  .sp-segB{position:relative;display:flex;gap:4px;padding:4px;border-radius:100px;background:rgba(255,255,255,.2)}
+  /* Sliding active pill across 3 equal-width segments */
+  .sp-segB::before{content:"";position:absolute;z-index:0;top:4px;bottom:4px;left:4px;width:calc((100% - 16px)/3);
+    border-radius:100px;background:#fff;border:1px solid rgba(255,255,255,.5);box-sizing:border-box;
+    transform:translateX(calc(var(--seg-i,0) * (100% + 4px)));
+    transition:transform .28s cubic-bezier(.25,1,.5,1)}
+  .sp-segB__btn{position:relative;z-index:1;flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;border:0;
+    cursor:pointer;border-radius:100px;font-family:inherit;font-size:14px;color:#cdd8ee;background:transparent;transition:color .2s}
+  .sp-segB__btn .material-symbols-outlined{font-size:18px}
+  .sp-segB__btn.is-active{color:#333f48;font-weight:500}
+  .sp-segB__badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+    border-radius:100px;font-size:12px;font-weight:500;background:rgba(255,255,255,.18);color:#fff}
+  .sp-segB__btn.is-active .sp-segB__badge{background:#ECF1F5;color:#333f48}
+  .sp-segB__badge--red{background:#E0341F;color:#fff}
+  .sp-segB__btn.is-active .sp-segB__badge--red{background:#E0341F;color:#fff}
+
+  /* ---- Version toggle: A is default, B hidden ---- */
+  .minibar__alerts--b{display:none}
+  body[data-panel-ver="b"] .minibar__alerts--a{display:none}
+  body[data-panel-ver="b"] .minibar__alerts--b{display:flex}
+  body[data-panel-ver="b"] .sp-seg{display:none}
+  body[data-panel-ver="b"] .sp-tabsB{display:flex}
+
+  /* Scroll body */
+  .sp-body{flex:1 1 auto;overflow-y:auto;padding:12px 20px 8px;display:flex;flex-direction:column;gap:14px}
+  .sp-body::-webkit-scrollbar{width:8px}
+  .sp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:8px}
+
+  /* Collapsible section: the card sits in a single-track grid wrapper that animates
+     grid-template-rows 1fr→0fr (justified layout-animation exception for a disclosure
+     pattern); the row gap collapses in step so nothing is left hanging. */
+  .sp-sec{display:flex;flex-direction:column;gap:8px;transition:gap .28s cubic-bezier(.25,1,.5,1)}
+  .sp-sec.is-collapsed{gap:0}
+  .sp-collapse{display:grid;grid-template-rows:1fr;transition:grid-template-rows .28s cubic-bezier(.25,1,.5,1)}
+  .sp-sec.is-collapsed .sp-collapse{grid-template-rows:0fr}
+  .sp-sec__head{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;cursor:pointer;
+    padding:2px 2px;font-family:inherit;color:#fff}
+  .sp-sec__icon{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center}
+  .sp-sec__icon .material-symbols-outlined{font-size:20px}
+  .sp-sec__icon--red .material-symbols-outlined{color:#E0341F}
+  .sp-sec__icon--bell .material-symbols-outlined{color:#cdd8ee}
+  .sp-sec__icon--eye .material-symbols-outlined{color:#cdd8ee}
+  .sp-sec__title{font-size:15px;font-weight:500}
+  .sp-sec__count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+    border-radius:100px;font-size:12px;font-weight:500}
+  .sp-sec__count--red{background:#E0341F;color:#fff}
+  .sp-sec__count--gray{background:rgba(255,255,255,.2);color:#fff}
+  .sp-sec__chev{margin-left:auto;color:#cdd8ee;transition:transform .25s ease}
+  .sp-sec__chev .material-symbols-outlined{font-size:22px}
+  .sp-sec.is-collapsed .sp-sec__chev{transform:rotate(180deg)}
+  .sp-card{background:#fff;border-radius:14px;overflow:hidden;min-height:0;transition:opacity .2s ease}
+  .sp-sec.is-collapsed .sp-card{opacity:0}
+  .sp-row{display:flex;flex-direction:column;gap:8px;padding:16px;border-top:1px solid #ECF1F5;cursor:pointer;
+    transition:background .15s}
+  .sp-row:first-child{border-top:0}
+  .sp-row:hover{background:#F7FAFC}
+  .sp-row__meta{display:flex;align-items:center;gap:8px;font-size:14px;color:#5C6E72}
+  .sp-row__chev{color:#5C6E72;display:inline-flex;flex:0 0 auto}
+  .sp-row__chev .material-symbols-outlined{font-size:18px}
+  .sp-row__esc{display:inline-flex;align-items:center;gap:2px;color:#E0341F;font-weight:500;font-style:italic}
+  .sp-row__esc .material-symbols-outlined{font-size:16px;font-style:normal}
+  .sp-row__title{display:flex;align-items:center;gap:8px;min-width:0}
+  .sp-row__title-txt{flex:1 1 auto;min-width:0;font-size:14px;font-weight:500;color:#002496;line-height:20px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sp-row__truck{width:24px;height:24px;flex:0 0 auto;display:block;border-radius:2px}
+  .sp-row__truck--group{background:#C7E6FF;overflow:hidden}
+  /* Assigned card variant — light gray bg + person avatar */
+  .sp-row--assigned{background:#ECF1F5}
+  .sp-row--assigned:hover{background:#e3eaf1}
+  .sp-row--assigned .sp-row__title{color:#002496;font-weight:500;justify-content:space-between;align-items:center}
+  .sp-avatar{width:26px;height:26px;flex:0 0 auto;border-radius:50%;background:#F97316;color:#fff;
+    display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;letter-spacing:.3px}
+
+  /* Footer */
+  .sp-foot{flex:0 0 auto;display:flex;justify-content:center;padding:14px 20px 18px}
+  .sp-hide{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 22px;border-radius:100px;cursor:pointer;
+    border:0;background:#fff;color:#002496;font-family:inherit;font-size:14px;font-weight:500;
+    transition:filter .18s,transform .1s cubic-bezier(.22,1,.36,1)}
+  .sp-hide:hover{filter:brightness(.94)}
+  .sp-hide:active{transform:scale(.97)}
+  .sp-hide .material-symbols-outlined{font-size:18px}
+
+  /* ============================================================
+     FULL-SCREEN EXPANDED VIEW (expand button → node 7050-114776)
+     ============================================================ */
+  .sp-full{display:none}
+  .smartpanel.is-full>.sp-head,.smartpanel.is-full>.sp-body{display:none}
+  .smartpanel.is-full>.sp-full{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+  /* Entrance: the container stays put; its content groups carry the motion (one entrance per
+     container) — a gentle upward rise + fade, staggered top-down so the most-important
+     section ("Act now", first in DOM) leads. Stagger span 200ms (<300ms). */
+  .smartpanel.is-full>.sp-full>.spf-head,
+  .smartpanel.is-full>.sp-full>.spf-greet,
+  .smartpanel.is-full>.sp-full>.spf-tabs,
+  .smartpanel.is-full>.sp-full>.spf-scroll>.spf-sec{
+    animation:spfRise .4s cubic-bezier(.22,1,.36,1) both}
+  .smartpanel.is-full>.sp-full>.spf-greet{animation-delay:40ms}
+  .smartpanel.is-full>.sp-full>.spf-tabs{animation-delay:80ms}
+  .smartpanel.is-full>.sp-full>.spf-scroll>.spf-sec:nth-child(1){animation-delay:120ms}
+  .smartpanel.is-full>.sp-full>.spf-scroll>.spf-sec:nth-child(2){animation-delay:160ms}
+  .smartpanel.is-full>.sp-full>.spf-scroll>.spf-sec:nth-child(3){animation-delay:200ms}
+  @keyframes spfRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  /* Full → minibar collapse: the full-screen content fade-out is driven inline by JS in
+     closePanel — it transitions the .sp-full container's opacity to 0 so the whole content
+     dissolves along with the morph instead of scaling to a tiny version. */
+  /* Top meta bar */
+  .spf-head{display:flex;align-items:center;gap:16px;padding:24px 24px 0 32px;color:#cdd8ee;font-size:14px;flex:0 0 auto}
+  .spf-head__meta{display:flex;align-items:center;gap:10px;color:#dbe5f7;white-space:nowrap}
+  .spf-head__meta .material-symbols-outlined{font-size:18px;color:#ffd23f}
+  .spf-head__sep{width:1px;height:14px;background:rgba(255,255,255,.25)}
+  .spf-head__spacer{flex:1}
+  .spf-ctrls{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}
+  .spf-ctrl{width:30px;height:30px;border:0;background:transparent;color:#cdd8ee;cursor:pointer;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;transition:background .18s,color .18s}
+  .spf-ctrl:hover{background:rgba(255,255,255,.12);color:#fff}
+  .spf-ctrl svg{width:18px;height:18px;display:block}
+  .spf-ctrl--collapse svg{transform:scaleX(-1)}
+  .spf-ctrl .material-symbols-outlined{font-size:20px}
+  /* Greeting + Ask Assistant */
+  .spf-greet{display:flex;align-items:center;gap:32px;padding:30px 32px 0;flex:0 0 auto}
+  .spf-greet h2{margin:0;font-size:32px;font-weight:400;color:#fff;white-space:nowrap;letter-spacing:0;line-height:1.1}
+  .spf-greet h2 b{font-weight:700}
+  .spf-greet__spacer{flex:1}
+  .spf-ask{position:relative;display:flex;align-items:center;gap:12px;width:min(522px,42%);height:52px;padding:0 8px 0 8px;border-radius:100px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);color:#aebbd6;font-size:15px;cursor:text;
+    transition:background .25s ease,border-color .25s ease}
+  /* Gemini-style AI halo — same masked conic ring as the minibar, revealed + spun clockwise on hover */
+  .spf-ask::before{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;z-index:0;
+    background:conic-gradient(from var(--halo-angle),#38e8ff,#1f8fff,#8b5cf6,#82ffc3,#38e8ff);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    filter:blur(3px) saturate(1.25);opacity:0;transition:opacity .35s ease}
+  .spf-ask>*{position:relative;z-index:1}
+  /* Selected (focus-within): same halo reveal + clockwise spin as hover */
+  .spf-ask:focus-within{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
+  .spf-ask:focus-within::before{opacity:1;animation:halo-spin 7s linear infinite}
+  .spf-ask__icon{width:36px;height:36px;flex:0 0 auto;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+    background:linear-gradient(121deg,#348fc3 5%,#1c7fe0 90%);color:#fff}
+  .spf-ask__icon .material-symbols-outlined{font-size:18px}
+  .spf-ask__field{flex:1 1 auto;min-width:0;border:0;background:transparent;color:#fff;font-family:inherit;font-size:15px;
+    line-height:1.2;outline:none;padding:0}
+  .spf-ask__field::placeholder{color:#aebbd6}
+  /* Action cluster (clear + send) reveals only when there's input — width-wipe (grid) + fade,
+     the same single coordinated reveal recipe used by .sp-collapse. */
+  .spf-ask__actions{display:grid;grid-template-columns:0fr;flex:0 0 auto;
+    transition:grid-template-columns .2s cubic-bezier(.22,1,.36,1)}
+  .spf-ask.has-input .spf-ask__actions{grid-template-columns:1fr;
+    transition:grid-template-columns .34s cubic-bezier(.22,1,.36,1)}
+  /* Inner clips the off-screen buttons so they appear to slide in from the right edge */
+  .spf-ask__actions-inner{overflow:hidden;min-width:0;display:flex;align-items:center;gap:6px}
+  .spf-ask__btn{width:36px;height:36px;flex:0 0 auto;border:0;border-radius:50%;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;font-family:inherit;
+    opacity:0;transform:translateX(20px);
+    transition:opacity .15s ease,transform .2s cubic-bezier(.22,1,.36,1),background .18s,filter .18s}
+  /* Reveal: slide in from the side + fade, on the enter curve. Send (rightmost/primary) leads, clear trails. */
+  .spf-ask.has-input .spf-ask__btn{opacity:1;transform:translateX(0);
+    transition:opacity .28s ease,transform .42s cubic-bezier(.22,1,.36,1),background .18s,filter .18s}
+  .spf-ask.has-input .spf-ask__clear{transition-delay:.05s}
+  .spf-ask.has-input .spf-ask__btn:active{transform:scale(.92);transition:transform .1s cubic-bezier(.22,1,.36,1)}
+  .spf-ask__btn .material-symbols-outlined{font-size:18px}
+  .spf-ask__clear{background:rgba(255,255,255,.12);color:#dbe7ff}
+  .spf-ask__send{background:linear-gradient(121deg,#348fc3 5%,#1c7fe0 90%);color:#fff}
+  /* Tabs + filters */
+  .spf-tabs{display:flex;align-items:center;gap:28px;padding:20px 32px 0;flex:0 0 auto}
+  .spf-tab{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:16px;color:#aebbd6;cursor:pointer;padding-bottom:8px;
+    border:0;background:transparent;font-family:inherit;transition:color .2s ease}
+  /* Underline reveals/retracts via scaleX (transform-only) when the active tab changes */
+  .spf-tab::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:#fff;
+    transform:scaleX(0);transform-origin:center;transition:transform .25s cubic-bezier(.25,1,.5,1)}
+  .spf-tab.is-active{color:#fff;font-weight:500}
+  .spf-tab.is-active::after{transform:scaleX(1)}
+  .spf-tab__badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+    border-radius:100px;background:rgba(255,255,255,.16);color:#fff;font-size:12px}
+  .spf-tabs__spacer{flex:1}
+  .spf-filters{display:flex;align-items:center;gap:10px;color:#aebbd6;font-size:13px}
+  .spf-chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:100px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#dbe5f7;font-size:13px;cursor:pointer;font-family:inherit;
+    transition:background .18s,border-color .18s,transform .1s cubic-bezier(.22,1,.36,1)}
+  .spf-chip:active{transform:scale(.97)}
+  .spf-chip .material-symbols-outlined{font-size:16px}
+  .spf-chip .spf-chip__dot{font-size:12px;color:#a78bdb}
+  .spf-chip__badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;
+    border-radius:100px;background:rgba(255,255,255,.2);color:#fff;font-size:11px}
+  .spf-filters__sep{width:1px;height:20px;background:rgba(255,255,255,.2);margin:0 4px}
+  /* Scroll body with two-column sections */
+  .spf-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 32px 4px}
+  .spf-sec{display:flex;gap:10px;padding:24px 0}
+  .spf-sec+.spf-sec{border-top:1px solid rgba(255,255,255,.12)}
+  .spf-sec__side{flex:0 0 387px}
+  .spf-sec__h{display:flex;align-items:center;gap:8px}
+  .spf-sec__h .material-symbols-outlined{font-size:24px;color:#cdd8ee}
+  .spf-sec__h--red .material-symbols-outlined{color:#EA6761}
+  .spf-sec__title{font-size:16px;font-weight:500;color:#fff}
+  .spf-sec__count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+    border-radius:100px;font-size:12px;font-weight:600}
+  .spf-sec__count--red{background:#E0341F;color:#fff}
+  .spf-sec__count--gray{background:rgba(255,255,255,.16);color:#fff}
+  .spf-sec__desc{margin-top:6px;padding-left:32px;color:#9fb0cf;font-size:13px}
+  .spf-sec__alerts{flex:1 1 auto;min-width:0;background:#fff;border-radius:14px;overflow:hidden;align-self:flex-start}
+  .spf-row{display:flex;align-items:center;height:56px;padding:0 24px;cursor:pointer;transition:background .15s}
+  .spf-row:hover{background:#F7FAFC}
+  .spf-row__chev{flex:0 0 36px;color:#8A999C;display:inline-flex;align-items:center}
+  .spf-row__chev .material-symbols-outlined{font-size:20px}
+  .spf-row__status{flex:0 0 24px;display:inline-flex;align-items:center;justify-content:center;margin-right:8px}
+  .spf-dot{width:10px;height:10px;border-radius:50%;background:#8B5CF6}
+  .spf-row__status--esc{color:#E0341F}
+  .spf-row__status .material-symbols-outlined{font-size:18px}
+  .spf-row__status--cal .material-symbols-outlined{color:#8A999C;font-size:18px}
+  .spf-row__time{flex:0 0 125px;font-size:14px;color:#5C6E72;margin-right:8px}
+  .spf-row__truck{width:24px;height:24px;flex:0 0 auto;display:block;border-radius:4px;margin-right:8px}
+  .spf-row__truck--group{background:#C7E6FF;overflow:hidden}
+  .spf-row__title{flex:1 1 auto;min-width:0;font-size:14px;font-weight:500;color:#002496;line-height:20px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Hover affordances for toggles/tabs/chips — gated to real pointers to avoid sticky
+     hover on touch (P1 polish) */
+  @media (hover:hover) and (pointer:fine){
+    .sp-seg__btn:not(.is-active):hover{color:#fff}
+    .sp-segB__btn:not(.is-active):hover{color:#fff}
+    .spf-tab:not(.is-active):hover{color:#dbe7ff}
+    .spf-chip:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28)}
+    .spf-ask:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.28)}
+    .spf-ask:hover::before{opacity:1;animation:halo-spin 7s linear infinite}
+    .spf-ask__clear:hover{background:rgba(255,255,255,.2)}
+    .spf-ask__send:hover{filter:brightness(1.12)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .sp-seg::before,.sp-segB::before,.spf-tab::after,.spf-chip,.spf-ask,.spf-ask::before,
+    .spf-ask__actions,.spf-ask__actions-inner,.spf-ask__btn{transition:none}
+    .spf-ask:hover::before,.spf-ask:focus-within::before{animation:none}
+    .smartpanel,.sp-scrim,.sp-sec__chev,body.sp-open .minibar,
+    .sp-head,.sp-body,.sp-foot,.sp-sec,.sp-card,.minibar,
+    .minibar:active,.minibar__assistant,.minibar__assistant:active,
+    .sp-assistant,.sp-assistant:active,.sp-hide,.sp-hide:active{transition:none}
+    .minibar:active,.minibar__assistant:active,.sp-assistant:active,.sp-hide:active{transform:none}
+    .smartpanel.is-full>.sp-full>.spf-head,
+    .smartpanel.is-full>.sp-full>.spf-greet,
+    .smartpanel.is-full>.sp-full>.spf-tabs,
+    .smartpanel.is-full>.sp-full>.spf-scroll>.spf-sec{animation:none}
+  }
+
 </style>
 </head>
 <body data-variant="1">
@@ -806,6 +1165,11 @@
     <div class="time-switch" role="group" aria-label="Time of day">
       <button data-time="day" data-label="Day" aria-label="Daytime"><span class="material-symbols-outlined icon-fill">light_mode</span></button>
       <button data-time="night" data-label="Night" aria-label="Nighttime"><span class="material-symbols-outlined icon-fill">dark_mode</span></button>
+    </div>
+    <div class="proto-div" aria-hidden="true"></div>
+    <div class="ver-switch" role="group" aria-label="Smart panel version">
+      <button class="is-on" data-ver="a" data-label="Version A" aria-label="Version A">A</button>
+      <button data-ver="b" data-label="Version B" aria-label="Version B">B</button>
     </div>
   </div>
   <div class="v1logo">Digital Fleet</div>
@@ -845,10 +1209,14 @@
         </div>
         <div class="minibar">
           <span class="minibar__greet">Good morning, <b>Luke</b></span>
-          <div class="minibar__alerts">
-            <span class="alert alert--flash"><span class="material-symbols-outlined icon-fill">bolt</span>2</span>
-            <span class="alert"><span class="material-symbols-outlined icon-fill">notifications</span>4</span>
-            <span class="alert"><span class="material-symbols-outlined icon-fill">adjust</span>4</span>
+          <div class="minibar__alerts minibar__alerts--a">
+            <span class="alert"><span class="material-symbols-outlined">assignment_ind</span>8</span>
+            <span class="alert"><span class="material-symbols-outlined">format_list_bulleted</span>17</span>
+          </div>
+          <div class="minibar__alerts minibar__alerts--b">
+            <span class="alert"><span class="material-symbols-outlined icon-fill">bolt</span>8</span>
+            <span class="alert"><span class="material-symbols-outlined">notifications</span>1</span>
+            <span class="alert"><span class="material-symbols-outlined">sensors</span>2</span>
           </div>
           <button class="minibar__assistant"><span class="material-symbols-outlined icon-fill">auto_awesome</span>Assistant</button>
         </div>
@@ -2236,6 +2604,15 @@
     sceneBtns.forEach(function(b){ b.addEventListener('click',function(){ scene=b.getAttribute('data-bg'); render(); }); });
     timeBtns.forEach(function(b){ b.addEventListener('click',function(){ time=b.getAttribute('data-time'); render(); }); });
     render();
+
+    // Smart panel version switch (A / B)
+    var verBtns=Array.prototype.slice.call(document.querySelectorAll('.ver-switch button'));
+    document.body.setAttribute('data-panel-ver','a');
+    verBtns.forEach(function(b){ b.addEventListener('click',function(){
+      var v=b.getAttribute('data-ver');
+      document.body.setAttribute('data-panel-ver',v);
+      verBtns.forEach(function(x){var on=x===b;x.classList.toggle('is-on',on);x.setAttribute('aria-pressed',on?'true':'false');});
+    }); });
   })();
   </script>
   <script>
@@ -2289,6 +2666,433 @@
       </div>
     </div>
   </div>
+
+  <!-- ===== Smart Panel (minibar expands into this) ===== -->
+  <div class="sp-scrim" id="spScrim"></div>
+  <aside class="smartpanel" id="smartPanel" role="dialog" aria-modal="true" aria-label="Smart Panel">
+    <div class="sp-head">
+      <div class="sp-head__top">
+        <span class="sp-greet"><span class="material-symbols-outlined icon-fill">sunny</span>Good morning, <b>Luke</b></span>
+        <span class="sp-head__spacer"></span>
+        <button class="sp-assistant"><span class="material-symbols-outlined icon-fill">auto_awesome</span>Assistant</button>
+        <button class="sp-expand" id="spExpand" aria-label="Expand panel" title="Expand">
+          <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="18" height="18" rx="3" fill="currentColor" fill-opacity="0.45"/>
+            <rect x="0.625" y="0.625" width="16.75" height="16.75" rx="2.375" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.25"/>
+            <rect x="15.75" y="2.25" width="13.5" height="5.625" rx="1" transform="rotate(90 15.75 2.25)" fill="currentColor" opacity="0.85"/>
+            <path d="M6.75 11.25L4.5 9L6.75 6.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="sp-close" id="spClose" aria-label="Close panel"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="sp-seg" role="tablist">
+        <button class="sp-seg__btn is-active" role="tab" aria-selected="true">
+          <span class="material-symbols-outlined">assignment_ind</span>For you<span class="sp-seg__badge">8</span>
+        </button>
+        <button class="sp-seg__btn" role="tab" aria-selected="false">
+          <span class="material-symbols-outlined">format_list_bulleted</span>All actions<span class="sp-seg__badge">17</span>
+        </button>
+      </div>
+      <div class="sp-tabsB">
+        <div class="sp-tabsB__row">
+          <span class="sp-tabsB__foryou">For you<span class="sp-tabsB__badge">8</span></span>
+          <button class="sp-tabsB__viewall">View all actions (11)<span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
+        <div class="sp-segB" role="tablist">
+          <button class="sp-segB__btn is-active" role="tab" aria-selected="true">
+            <span class="material-symbols-outlined icon-fill">bolt</span>Act now<span class="sp-segB__badge sp-segB__badge--red">5</span>
+          </button>
+          <button class="sp-segB__btn" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined">notifications</span><span class="sp-segB__badge">1</span>
+          </button>
+          <button class="sp-segB__btn" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined">sensors</span><span class="sp-segB__badge">2</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sp-body">
+      <!-- Act now -->
+      <section class="sp-sec">
+        <button class="sp-sec__head" data-sp-toggle>
+          <span class="sp-sec__icon sp-sec__icon--red"><span class="material-symbols-outlined icon-fill">bolt</span></span>
+          <span class="sp-sec__title">Act now</span>
+          <span class="sp-sec__count sp-sec__count--red">5</span>
+          <span class="sp-sec__chev"><span class="material-symbols-outlined">expand_less</span></span>
+        </button>
+        <div class="sp-collapse"><div class="sp-card">
+          <div class="sp-row">
+            <div class="sp-row__meta"><span class="sp-row__chev"><span class="material-symbols-outlined">expand_more</span></span><span>Now</span></div>
+            <div class="sp-row__title"><img class="sp-row__truck" src="images/vehicle.svg" alt=""><span class="sp-row__title-txt">Unit 22470: Abnormal Ambient-To-Intake Pressure Differential</span></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-row__meta"><span class="sp-row__chev"><span class="material-symbols-outlined">expand_more</span></span><span>Today 1:30 PM</span></div>
+            <div class="sp-row__title"><img class="sp-row__truck" src="images/vehicle.svg" alt=""><span class="sp-row__title-txt">Unit 3356: Accident detected near I-65</span></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-row__meta"><span class="sp-row__chev"><span class="material-symbols-outlined">expand_more</span></span><span>Today 8:30 AM</span><span class="sp-row__esc">Escalated<span class="material-symbols-outlined">keyboard_double_arrow_up</span></span></div>
+            <div class="sp-row__title"><img class="sp-row__truck" src="images/vehicle.svg" alt=""><span class="sp-row__title-txt">Unit 22410: Accident detected near US-2</span></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-row__meta"><span class="sp-row__chev"><span class="material-symbols-outlined">expand_more</span></span><span>Today 2:30 PM</span><span class="sp-row__esc">Escalated<span class="material-symbols-outlined">keyboard_double_arrow_up</span></span></div>
+            <div class="sp-row__title"><img class="sp-row__truck" src="images/vehicle.svg" alt=""><span class="sp-row__title-txt">Unit 22470: Abnormal Ambient-To-Intake Pressure Differential</span></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-row__meta"><span class="sp-row__chev"><span class="material-symbols-outlined">expand_more</span></span><span>Today 2:30 PM</span><span class="sp-row__esc">Escalated<span class="material-symbols-outlined">keyboard_double_arrow_up</span></span></div>
+            <div class="sp-row__title"><img class="sp-row__truck" src="images/vehicle.svg" alt=""><span class="sp-row__title-txt">Unit 22470: Abnormal Ambient-To-Intake Pressure Differential</span></div>
+          </div>
+        </div></div>
+      </section>
+
+      <!-- Act soon -->
+      <section class="sp-sec">
+        <button class="sp-sec__head" data-sp-toggle>
+          <span class="sp-sec__icon sp-sec__icon--bell"><span class="material-symbols-outlined">notifications</span></span>
+          <span class="sp-sec__title">Act soon</span>
+          <span class="sp-sec__count sp-sec__count--gray">1</span>
+          <span class="sp-sec__chev"><span class="material-symbols-outlined">expand_less</span></span>
+        </button>
+        <div class="sp-collapse"><div class="sp-card">
+          <div class="sp-row">
+            <div class="sp-row__meta"><span class="sp-row__chev"><span class="material-symbols-outlined">expand_more</span></span><span>Today 2:30 PM</span></div>
+            <div class="sp-row__title"><img class="sp-row__truck" src="images/vehicle.svg" alt=""><span class="sp-row__title-txt">Unit 22470: Abnormal Ambient-To-Intake Pressure Differential</span></div>
+          </div>
+        </div></div>
+      </section>
+
+      <!-- Needs attention -->
+      <section class="sp-sec">
+        <button class="sp-sec__head" data-sp-toggle>
+          <span class="sp-sec__icon sp-sec__icon--eye"><span class="material-symbols-outlined">visibility</span></span>
+          <span class="sp-sec__title">Needs attention</span>
+          <span class="sp-sec__count sp-sec__count--gray">2</span>
+          <span class="sp-sec__chev"><span class="material-symbols-outlined">expand_less</span></span>
+        </button>
+        <div class="sp-collapse"><div class="sp-card">
+          <div class="sp-row">
+            <div class="sp-row__meta"><span class="sp-row__chev"><span class="material-symbols-outlined">expand_more</span></span><span>Today 2:30 PM</span></div>
+            <div class="sp-row__title"><img class="sp-row__truck sp-row__truck--group" src="images/group-icon.png" alt=""><span class="sp-row__title-txt">3 assets with inspections due in next 2 weeks</span></div>
+          </div>
+          <div class="sp-row">
+            <div class="sp-row__meta"><span class="sp-row__chev"><span class="material-symbols-outlined">expand_more</span></span><span>Today 2:30 PM</span></div>
+            <div class="sp-row__title"><img class="sp-row__truck sp-row__truck--group" src="images/group-icon.png" alt=""><span class="sp-row__title-txt">20 assets with registrations expiring in next 30 days</span></div>
+          </div>
+        </div></div>
+      </section>
+    </div>
+
+    <!-- ===== Full-screen expanded layout ===== -->
+    <div class="sp-full">
+      <div class="spf-head">
+        <span class="spf-head__meta"><span class="material-symbols-outlined icon-fill">sunny</span>79&nbsp;&deg;F</span>
+        <span class="spf-head__sep"></span>
+        <span class="spf-head__meta">Pittsburgh, PA</span>
+        <span class="spf-head__sep"></span>
+        <span class="spf-head__meta">7:15 AM Monday, January 6</span>
+        <span class="spf-head__spacer"></span>
+        <div class="spf-ctrls">
+          <button class="spf-ctrl spf-ctrl--collapse" id="spfCollapse" aria-label="Collapse panel" title="Collapse">
+            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect width="18" height="18" rx="3" fill="currentColor" fill-opacity="0.45"/>
+              <rect x="0.625" y="0.625" width="16.75" height="16.75" rx="2.375" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.25"/>
+              <rect x="15.75" y="2.25" width="13.5" height="5.625" rx="1" transform="rotate(90 15.75 2.25)" fill="currentColor" opacity="0.85"/>
+              <path d="M6.75 11.25L4.5 9L6.75 6.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="spf-ctrl" id="spfClose" aria-label="Close panel"><span class="material-symbols-outlined">close</span></button>
+        </div>
+      </div>
+
+      <div class="spf-greet">
+        <h2>Good morning, <b>Luke!</b></h2>
+        <span class="spf-greet__spacer"></span>
+        <div class="spf-ask">
+          <span class="spf-ask__icon"><span class="material-symbols-outlined icon-fill">auto_awesome</span></span>
+          <input class="spf-ask__field" type="text" placeholder="Ask Assistant" aria-label="Ask Assistant">
+          <div class="spf-ask__actions"><div class="spf-ask__actions-inner">
+            <button class="spf-ask__btn spf-ask__clear" type="button" aria-label="Clear"><span class="material-symbols-outlined">close</span></button>
+            <button class="spf-ask__btn spf-ask__send" type="button" aria-label="Send"><span class="material-symbols-outlined">arrow_upward</span></button>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="spf-tabs">
+        <button class="spf-tab is-active">For you<span class="spf-tab__badge">8</span></button>
+        <button class="spf-tab">All actions<span class="spf-tab__badge">17</span></button>
+        <span class="spf-tabs__spacer"></span>
+        <div class="spf-filters">
+          <span class="spf-filters__label">Filters:</span>
+          <button class="spf-chip"><span class="material-symbols-outlined icon-fill spf-chip__dot">circle</span>Net new<span class="spf-chip__badge">2</span></button>
+          <button class="spf-chip"><span class="material-symbols-outlined">keyboard_double_arrow_up</span>Escalated<span class="spf-chip__badge">2</span></button>
+          <button class="spf-chip"><span class="material-symbols-outlined">assignment_ind</span>Assigned to you<span class="spf-chip__badge">5</span></button>
+          <button class="spf-chip"><span class="material-symbols-outlined">location_on</span>Hubs:&nbsp;All<span class="material-symbols-outlined">expand_more</span></button>
+          <span class="spf-filters__sep"></span>
+          <button class="spf-chip" style="background:transparent;border:0"><span class="material-symbols-outlined">tune</span>Preference</button>
+        </div>
+      </div>
+
+      <div class="spf-scroll">
+        <!-- Act now -->
+        <section class="spf-sec">
+          <div class="spf-sec__side">
+            <div class="spf-sec__h spf-sec__h--red">
+              <span class="material-symbols-outlined icon-fill">bolt</span>
+              <span class="spf-sec__title">Act now</span>
+              <span class="spf-sec__count spf-sec__count--red">5</span>
+            </div>
+            <div class="spf-sec__desc">Immediate action needed.</div>
+          </div>
+          <div class="spf-sec__alerts">
+            <div class="spf-row">
+              <span class="spf-row__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              <span class="spf-row__status"><span class="spf-dot"></span></span>
+              <span class="spf-row__time">Now</span>
+              <img class="spf-row__truck" src="images/vehicle.svg" alt="">
+              <span class="spf-row__title">22470: Abnormal ambient-to-intake pressure differential</span>
+            </div>
+            <div class="spf-row">
+              <span class="spf-row__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              <span class="spf-row__status"><span class="spf-dot"></span></span>
+              <span class="spf-row__time">Today 2:30 PM</span>
+              <img class="spf-row__truck" src="images/vehicle.svg" alt="">
+              <span class="spf-row__title">Unit 3356: Accident detected near I-65</span>
+            </div>
+            <div class="spf-row">
+              <span class="spf-row__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              <span class="spf-row__status spf-row__status--esc"><span class="material-symbols-outlined">keyboard_double_arrow_up</span></span>
+              <span class="spf-row__time">Today 2:30 PM</span>
+              <img class="spf-row__truck" src="images/vehicle.svg" alt="">
+              <span class="spf-row__title">Unit 22410: Accident detected near US-2</span>
+            </div>
+            <div class="spf-row">
+              <span class="spf-row__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              <span class="spf-row__status spf-row__status--esc"><span class="material-symbols-outlined">keyboard_double_arrow_up</span></span>
+              <span class="spf-row__time">Today 2:30 PM</span>
+              <img class="spf-row__truck" src="images/vehicle.svg" alt="">
+              <span class="spf-row__title">Unit 21420 AA: Predicted vehicle breakdown due to engine regeneration issues</span>
+            </div>
+            <div class="spf-row">
+              <span class="spf-row__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              <span class="spf-row__status spf-row__status--esc"><span class="material-symbols-outlined">keyboard_double_arrow_up</span></span>
+              <span class="spf-row__time">Today 2:30 PM</span>
+              <img class="spf-row__truck" src="images/vehicle.svg" alt="">
+              <span class="spf-row__title">Unit 21420 AA: Predicted vehicle breakdown due to engine regeneration issues</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Act soon -->
+        <section class="spf-sec">
+          <div class="spf-sec__side">
+            <div class="spf-sec__h">
+              <span class="material-symbols-outlined">notifications</span>
+              <span class="spf-sec__title">Act soon</span>
+              <span class="spf-sec__count spf-sec__count--gray">1</span>
+            </div>
+            <div class="spf-sec__desc">Action needed in next 72 hours.</div>
+          </div>
+          <div class="spf-sec__alerts">
+            <div class="spf-row">
+              <span class="spf-row__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              <span class="spf-row__status spf-row__status--cal"><span class="material-symbols-outlined">event_note</span></span>
+              <span class="spf-row__time">Today 2:30 PM</span>
+              <img class="spf-row__truck spf-row__truck--group" src="images/group-icon.png" alt="">
+              <span class="spf-row__title">3 units with warranty expiring in next 4-7 days, with warranty-eligible repairs</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Needs attention -->
+        <section class="spf-sec">
+          <div class="spf-sec__side">
+            <div class="spf-sec__h">
+              <span class="material-symbols-outlined">visibility</span>
+              <span class="spf-sec__title">Needs attention</span>
+              <span class="spf-sec__count spf-sec__count--gray">2</span>
+            </div>
+            <div class="spf-sec__desc">Action needed within next 2 weeks</div>
+          </div>
+          <div class="spf-sec__alerts">
+            <div class="spf-row">
+              <span class="spf-row__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              <span class="spf-row__status spf-row__status--cal"><span class="material-symbols-outlined">event_note</span></span>
+              <span class="spf-row__time">Today 2:30 PM</span>
+              <img class="spf-row__truck spf-row__truck--group" src="images/group-icon.png" alt="">
+              <span class="spf-row__title">3 units with inspections due in next 2 weeks</span>
+            </div>
+            <div class="spf-row">
+              <span class="spf-row__chev"><span class="material-symbols-outlined">expand_more</span></span>
+              <span class="spf-row__status spf-row__status--cal"><span class="material-symbols-outlined">event_note</span></span>
+              <span class="spf-row__time">Today 2:30 PM</span>
+              <img class="spf-row__truck spf-row__truck--group" src="images/group-icon.png" alt="">
+              <span class="spf-row__title">20 units with registrations expiring in next 30 days</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="sp-foot">
+      <button class="sp-hide" id="spHide"><span class="material-symbols-outlined">expand_less</span>Hide</button>
+    </div>
+  </aside>
+
+  <script>
+  /* Smart Panel: minibar click expands into the side panel */
+  (function(){
+    var panel = document.getElementById('smartPanel');
+    var scrim = document.getElementById('spScrim');
+    var minibar = document.querySelector('.minibar');
+    var spFull = panel.querySelector('.sp-full');     // full-screen content container
+    if(!panel || !minibar) return;
+    var isOpen = false, animating = false;
+
+    // Compute the transform that collapses the docked panel onto the minibar.
+    // Measured with transform:none so the panel's own rect is its final docked rect.
+    function collapseTransform(){
+      var f = panel.getBoundingClientRect();           // final docked rect
+      var m = minibar.getBoundingClientRect();          // target (minibar)
+      if(!f.width || !m.width) return 'none';
+      var sx = m.width / f.width, sy = m.height / f.height;
+      var tx = m.left - f.left, ty = m.top - f.top;
+      return 'translate(' + tx + 'px,' + ty + 'px) scale(' + sx + ',' + sy + ')';
+    }
+
+    function openPanel(){
+      if(isOpen || animating) return;
+      isOpen = true; animating = true;
+      panel.style.willChange = 'transform';
+      panel.style.transition = 'none';
+      panel.style.transform = 'none';
+      panel.classList.add('is-open','sp-morphing');     // opacity->1 instantly (transition none)
+      document.body.classList.add('sp-open');
+      // Docked side panel: no scrim, main page stays interactive/scrollable.
+      // The scrim is only shown in full-screen mode (toggled in setFull).
+      var t = collapseTransform();                      // measure docked rect, derive collapse
+      panel.style.transform = t;                        // jump to minibar footprint
+      panel.getBoundingClientRect();                    // commit start state
+      requestAnimationFrame(function(){
+        panel.style.transition = '';                    // restore CSS transform transition (.36s ease-out)
+        panel.style.transform = 'none';                 // animate out to docked
+        panel.classList.remove('sp-morphing');          // inner content cross-fades in
+      });
+      window.setTimeout(function(){ animating = false; panel.style.willChange = 'auto'; }, 380);
+    }
+    function closePanel(){
+      if(!isOpen || animating) return;
+      isOpen = false; animating = true;
+      panel.style.willChange = 'transform';
+      panel.classList.add('sp-morphing','sp-closing');  // fade content out + quicker exit curve
+      scrim.classList.remove('is-open');
+      // Full screen uses the .sp-full container (docked .sp-head/.sp-body are display:none).
+      // Its content groups have a staggered spfRise entrance; on close we fade the whole
+      // container so the content dissolves with the morph. Establish an inline opacity
+      // transition with the start value committed so the fade below animates reliably.
+      var wasFull = panel.classList.contains('is-full');
+      if(wasFull && spFull){
+        spFull.style.animation = 'none';                // halt any in-flight entrance on the container
+        spFull.style.transition = 'opacity .26s ease';
+        spFull.style.opacity = '1';
+        spFull.getBoundingClientRect();                 // commit start state with transition in place
+      }
+      // Measure from the CURRENT rect (docked OR full screen) and keep is-full set for the
+      // whole morph, so the box origin stays put and `t` collapses cleanly onto the minibar.
+      var t = collapseTransform();
+      requestAnimationFrame(function(){
+        panel.style.transform = t;                       // animate down to minibar (.28s ease-out)
+        if(wasFull && spFull) spFull.style.opacity = '0';// dissolve full-screen content with the morph
+      });
+      window.setTimeout(function(){
+        // Hide instantly at the collapsed footprint — no opacity fade, no size snap, no flash
+        panel.style.transition = 'none';
+        setFull(false);                                 // reset full→docked geometry with NO animation (left snaps while hidden)
+        panel.classList.remove('is-open');              // opacity->0 instantly
+        document.body.classList.remove('sp-open');
+        panel.style.transform = 'none';
+        panel.classList.remove('sp-morphing','sp-closing');
+        panel.style.willChange = 'auto';
+        if(spFull){ spFull.style.animation = ''; spFull.style.transition = ''; spFull.style.opacity = ''; }  // reset so next expand replays spfIn
+        panel.getBoundingClientRect();                  // commit before re-enabling transitions
+        panel.style.transition = '';
+        animating = false;
+      }, 300);
+    }
+
+    // Expand / collapse between docked panel and full-screen view.
+    // `left` is the only geometry that changes — CSS already transitions it (.42s ease-out).
+    var expandBtn = document.getElementById('spExpand');
+    function setFull(full){
+      panel.classList.toggle('is-full', full);
+      scrim.classList.toggle('is-open', full);          // overlay only in full-screen mode
+      if(expandBtn){
+        expandBtn.classList.toggle('is-full', full);
+        expandBtn.setAttribute('aria-label', full ? 'Collapse panel' : 'Expand panel');
+        expandBtn.setAttribute('title', full ? 'Collapse' : 'Expand');
+      }
+    }
+    if(expandBtn){
+      expandBtn.addEventListener('click', function(){
+        setFull(!panel.classList.contains('is-full'));
+      });
+    }
+    // Full-screen header controls: collapse back to docked, or close entirely.
+    var spfCollapse = document.getElementById('spfCollapse');
+    var spfCloseBtn = document.getElementById('spfClose');
+    if(spfCollapse){ spfCollapse.addEventListener('click', function(){ setFull(false); }); }
+    if(spfCloseBtn){ spfCloseBtn.addEventListener('click', function(){ closePanel(); }); }
+
+    minibar.addEventListener('click', function(){ openPanel(); });
+    document.getElementById('spClose').addEventListener('click', function(){ closePanel(); });
+    document.getElementById('spHide').addEventListener('click', function(){ closePanel(); });
+    scrim.addEventListener('click', function(){ closePanel(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && isOpen){ closePanel(); } });
+
+    // Collapsible sections
+    panel.querySelectorAll('[data-sp-toggle]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        btn.closest('.sp-sec').classList.toggle('is-collapsed');
+      });
+    });
+
+    // Segmented toggle (Version A tabs + Version B 3-segment toggle).
+    // Drives the sliding pill by setting --seg-i (active index) on the container.
+    [['.sp-seg', '.sp-seg__btn'], ['.sp-segB', '.sp-segB__btn']].forEach(function(pair){
+      var container = panel.querySelector(pair[0]);
+      if(!container) return;
+      var btns = container.querySelectorAll(pair[1]);
+      btns.forEach(function(b, i){
+        b.addEventListener('click', function(){
+          btns.forEach(function(x){ x.classList.remove('is-active'); x.setAttribute('aria-selected','false'); });
+          b.classList.add('is-active'); b.setAttribute('aria-selected','true');
+          container.style.setProperty('--seg-i', i);
+        });
+      });
+    });
+
+    // Full-screen tabs: animate the active underline (scaleX) on switch.
+    var spfTabs = panel.querySelectorAll('.spf-tab');
+    spfTabs.forEach(function(t){
+      t.addEventListener('click', function(){
+        spfTabs.forEach(function(x){ x.classList.remove('is-active'); });
+        t.classList.add('is-active');
+      });
+    });
+
+    // Full-screen "Ask Assistant" input: reveal clear + send buttons once there's input.
+    var ask = panel.querySelector('.spf-ask');
+    if(ask){
+      var askField = ask.querySelector('.spf-ask__field');
+      var askClear = ask.querySelector('.spf-ask__clear');
+      var askSend  = ask.querySelector('.spf-ask__send');
+      var syncAsk = function(){ ask.classList.toggle('has-input', askField.value.trim().length > 0); };
+      askField.addEventListener('input', syncAsk);
+      askClear.addEventListener('click', function(){ askField.value = ''; syncAsk(); askField.focus(); });
+      askSend.addEventListener('click', function(){ askField.value = ''; syncAsk(); askField.focus(); });
+      askField.addEventListener('keydown', function(e){ if(e.key === 'Enter' && askField.value.trim()){ askField.value = ''; syncAsk(); } });
+    }
+  })();
+  </script>
 
   <script>
   (function(){
