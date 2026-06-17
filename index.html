@@ -509,6 +509,7 @@
   .guide-rpanel__head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
   .guide-rpanel__cat{font-size:20px;font-weight:600;color:#333f48}
   .guide-rpanel__count{font-size:13px;color:#c1c6c8}
+  .guide-rpanel__desc{font-size:13.5px;color:#5c6e72;line-height:1.5;margin:2px 0 0;flex-shrink:0}
   .guide-rpanel__divider{height:1px;background:#e5e5ed;flex-shrink:0;margin:0 -4px}
   .detail__panel{display:none;flex-direction:column;gap:0}
   .detail__panel.is-on{display:flex;animation:rise .35s cubic-bezier(.2,.7,.2,1)}
@@ -965,8 +966,16 @@
                 <button class="gmi gmi--inactive" data-cat="assets" role="tab" aria-selected="false">
                   <span class="gmi__radio"></span>
                   <span class="gmi__text">
-                    <span class="gmi__title-row"><span class="gmi__name">Asset Details</span></span>
+                    <span class="gmi__title-row"><span class="gmi__name">Power unit details</span></span>
                     <span class="gmi__sub">4 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="trailers" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Trailer details</span></span>
+                    <span class="gmi__sub">2 sub-steps</span>
                   </span>
                   <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
                 </button>
@@ -974,14 +983,14 @@
                   <span class="gmi__radio"></span>
                   <span class="gmi__text">
                     <span class="gmi__title-row"><span class="gmi__name">Maintenance</span></span>
-                    <span class="gmi__sub">6 sub-steps</span>
+                    <span class="gmi__sub">5 sub-steps</span>
                   </span>
                   <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
                 </button>
                 <button class="gmi gmi--inactive" data-cat="permissions" role="tab" aria-selected="false">
                   <span class="gmi__radio"></span>
                   <span class="gmi__text">
-                    <span class="gmi__title-row"><span class="gmi__name">Permissions &amp; Users</span></span>
+                    <span class="gmi__title-row"><span class="gmi__name">Users &amp; permissions</span></span>
                     <span class="gmi__sub">2 sub-steps</span>
                   </span>
                   <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
@@ -1028,18 +1037,19 @@
 
                 <div class="detail__panel" data-cat="assets">
                   <div class="guide-rpanel__head">
-                    <span class="guide-rpanel__cat">Asset Details</span>
+                    <span class="guide-rpanel__cat">Power unit details</span>
                     <span class="guide-rpanel__count">0 of 4 completed</span>
                   </div>
+                  <p class="guide-rpanel__desc">Add registration, ownership, and warranty info for your power units.</p>
                   <div class="guide-rpanel__divider"></div>
                   <div class="sub">
                     <span class="sub__node"></span>
-                    <span class="sub__body"><span class="sub__title">Add ownership details <span class="tag tag--req">Required</span></span><span class="sub__desc">Track your owned, leased, and rented assets.</span></span>
+                    <span class="sub__body"><span class="sub__title">Add ownership details</span><span class="sub__desc">Track owned, leased, and rented assets.</span></span>
                     <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
                   </div>
                   <div class="sub">
                     <span class="sub__node"></span>
-                    <span class="sub__body"><span class="sub__title">Add vehicle registration details</span><span class="sub__desc">Log details to help keep assets current.</span></span>
+                    <span class="sub__body"><span class="sub__title">Add vehicle registration</span><span class="sub__desc">Log registration details to keep assets current.</span></span>
                     <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
                   </div>
                   <div class="sub">
@@ -1054,10 +1064,29 @@
                   </div>
                 </div>
 
+                <div class="detail__panel" data-cat="trailers">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Trailer details</span>
+                    <span class="guide-rpanel__count">0 of 2 completed</span>
+                  </div>
+                  <p class="guide-rpanel__desc">Add registration and ownership info for your trailers.</p>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add ownership details</span><span class="sub__desc">Track owned, leased, and rented assets.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add vehicle registration</span><span class="sub__desc">Log registration details to keep assets current.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
                 <div class="detail__panel" data-cat="maintenance">
                   <div class="guide-rpanel__head">
                     <span class="guide-rpanel__cat">Maintenance</span>
-                    <span class="guide-rpanel__count">0 of 6 completed</span>
+                    <span class="guide-rpanel__count">0 of 5 completed</span>
                   </div>
                   <div class="guide-rpanel__divider"></div>
                   <div class="sub">
@@ -1085,16 +1114,11 @@
                     <span class="sub__body"><span class="sub__title">Set spending limits</span><span class="sub__desc">Choose a dollar threshold for automatic work order approvals.</span></span>
                     <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
                   </div>
-                  <div class="sub">
-                    <span class="sub__node"></span>
-                    <span class="sub__body"><span class="sub__title">Add service history</span><span class="sub__desc">Upload past repairs so techs can diagnose faster and records stay accurate.</span></span>
-                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
-                  </div>
                 </div>
 
                 <div class="detail__panel" data-cat="permissions">
                   <div class="guide-rpanel__head">
-                    <span class="guide-rpanel__cat">Permissions &amp; Users</span>
+                    <span class="guide-rpanel__cat">Users &amp; permissions</span>
                     <span class="guide-rpanel__count">0 of 2 completed</span>
                   </div>
                   <div class="guide-rpanel__divider"></div>
@@ -1604,8 +1628,16 @@
                 <button class="gmi gmi--inactive" data-cat="v2b-assets" role="tab" aria-selected="false">
                   <span class="gmi__radio"></span>
                   <span class="gmi__text">
-                    <span class="gmi__title-row"><span class="gmi__name">Asset Details</span></span>
+                    <span class="gmi__title-row"><span class="gmi__name">Power unit details</span></span>
                     <span class="gmi__sub">4 sub-steps</span>
+                  </span>
+                  <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                </button>
+                <button class="gmi gmi--inactive" data-cat="v2b-trailers" role="tab" aria-selected="false">
+                  <span class="gmi__radio"></span>
+                  <span class="gmi__text">
+                    <span class="gmi__title-row"><span class="gmi__name">Trailer details</span></span>
+                    <span class="gmi__sub">2 sub-steps</span>
                   </span>
                   <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
                 </button>
@@ -1613,14 +1645,14 @@
                   <span class="gmi__radio"></span>
                   <span class="gmi__text">
                     <span class="gmi__title-row"><span class="gmi__name">Maintenance</span></span>
-                    <span class="gmi__sub">6 sub-steps</span>
+                    <span class="gmi__sub">5 sub-steps</span>
                   </span>
                   <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
                 </button>
                 <button class="gmi gmi--inactive" data-cat="v2b-permissions" role="tab" aria-selected="false">
                   <span class="gmi__radio"></span>
                   <span class="gmi__text">
-                    <span class="gmi__title-row"><span class="gmi__name">Permissions &amp; Users</span></span>
+                    <span class="gmi__title-row"><span class="gmi__name">Users &amp; permissions</span></span>
                     <span class="gmi__sub">2 sub-steps</span>
                   </span>
                   <span class="gmi__arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
@@ -1667,18 +1699,19 @@
 
                 <div class="detail__panel" data-cat="v2b-assets">
                   <div class="guide-rpanel__head">
-                    <span class="guide-rpanel__cat">Asset Details</span>
+                    <span class="guide-rpanel__cat">Power unit details</span>
                     <span class="guide-rpanel__count">0 of 4 completed</span>
                   </div>
+                  <p class="guide-rpanel__desc">Add registration, ownership, and warranty info for your power units.</p>
                   <div class="guide-rpanel__divider"></div>
                   <div class="sub">
                     <span class="sub__node"></span>
-                    <span class="sub__body"><span class="sub__title">Add ownership details <span class="tag tag--req">Required</span></span><span class="sub__desc">Track your owned, leased, and rented assets.</span></span>
+                    <span class="sub__body"><span class="sub__title">Add ownership details</span><span class="sub__desc">Track owned, leased, and rented assets.</span></span>
                     <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
                   </div>
                   <div class="sub">
                     <span class="sub__node"></span>
-                    <span class="sub__body"><span class="sub__title">Add vehicle registration details</span><span class="sub__desc">Log details to help keep assets current.</span></span>
+                    <span class="sub__body"><span class="sub__title">Add vehicle registration</span><span class="sub__desc">Log registration details to keep assets current.</span></span>
                     <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
                   </div>
                   <div class="sub">
@@ -1693,10 +1726,29 @@
                   </div>
                 </div>
 
+                <div class="detail__panel" data-cat="v2b-trailers">
+                  <div class="guide-rpanel__head">
+                    <span class="guide-rpanel__cat">Trailer details</span>
+                    <span class="guide-rpanel__count">0 of 2 completed</span>
+                  </div>
+                  <p class="guide-rpanel__desc">Add registration and ownership info for your trailers.</p>
+                  <div class="guide-rpanel__divider"></div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add ownership details</span><span class="sub__desc">Track owned, leased, and rented assets.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                  <div class="sub">
+                    <span class="sub__node"></span>
+                    <span class="sub__body"><span class="sub__title">Add vehicle registration</span><span class="sub__desc">Log registration details to keep assets current.</span></span>
+                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  </div>
+                </div>
+
                 <div class="detail__panel" data-cat="v2b-maintenance">
                   <div class="guide-rpanel__head">
                     <span class="guide-rpanel__cat">Maintenance</span>
-                    <span class="guide-rpanel__count">0 of 6 completed</span>
+                    <span class="guide-rpanel__count">0 of 5 completed</span>
                   </div>
                   <div class="guide-rpanel__divider"></div>
                   <div class="sub">
@@ -1724,16 +1776,11 @@
                     <span class="sub__body"><span class="sub__title">Set spending limits</span><span class="sub__desc">Choose a dollar threshold for automatic work order approvals.</span></span>
                     <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
                   </div>
-                  <div class="sub">
-                    <span class="sub__node"></span>
-                    <span class="sub__body"><span class="sub__title">Add service history</span><span class="sub__desc">Upload past repairs so techs can diagnose faster and records stay accurate.</span></span>
-                    <span class="sub__go"><span class="material-symbols-outlined">arrow_forward</span></span>
-                  </div>
                 </div>
 
                 <div class="detail__panel" data-cat="v2b-permissions">
                   <div class="guide-rpanel__head">
-                    <span class="guide-rpanel__cat">Permissions &amp; Users</span>
+                    <span class="guide-rpanel__cat">Users &amp; permissions</span>
                     <span class="guide-rpanel__count">0 of 2 completed</span>
                   </div>
                   <div class="guide-rpanel__divider"></div>
@@ -2241,7 +2288,7 @@
   })();
   </script>
   <script>
-  /* V1 hero video — play once then freeze on last frame */
+  /* V1 hero video — play once, freeze on last frame (slow-mo baked into video) */
   (function(){
     var vid = document.getElementById('v1-hero-vid');
     if(!vid) return;
