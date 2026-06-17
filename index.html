@@ -926,6 +926,10 @@
   body[data-panel-ver="b"] .minibar__alerts--b{display:flex}
   body[data-panel-ver="b"] .sp-seg{display:none}
   body[data-panel-ver="b"] .sp-tabsB{display:flex}
+  /* Version B: the segmented tab above already labels the sections, so drop the redundant
+     section headers in the docked body and show only the "Act now" alerts (first section). */
+  body[data-panel-ver="b"] .sp-body .sp-sec__head{display:none}
+  body[data-panel-ver="b"] .sp-body .sp-sec:not(:first-of-type){display:none}
 
   /* Scroll body */
   .sp-body{flex:1 1 auto;overflow-y:auto;padding:12px 20px 8px;display:flex;flex-direction:column;gap:14px}
