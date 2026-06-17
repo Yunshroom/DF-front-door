@@ -182,6 +182,8 @@
   }
   @media (prefers-reduced-motion:reduce){
     .reveal,.headline .word{opacity:1;animation:none}
+    .dash__grid .wid,.asset__bar i{opacity:1;transform:none;animation:none}
+    .dchart__ring,.wid__live::before{animation:none}
     .hero__img{animation:none}
     .eyebrow__dot,.eyebrow__dot::after{animation:none}
     .stepbar{transform:none;opacity:1;animation:none}
@@ -429,6 +431,11 @@
   .v3hero__inner{position:relative;z-index:2;width:100%;max-width:960px;display:flex;flex-direction:column;align-items:center}
   .v3hero__title{font-size:clamp(32px,3.8vw,56px);line-height:1.06;font-weight:600;letter-spacing:-.5px;margin-top:18px;max-width:22ch;text-align:center}
   .v3hero__title .accent{font-style:normal;font-weight:600;color:inherit}
+  /* The "8" rolls up odometer-style (Motion number-trend) whenever the hero loads in. */
+  .numroll{display:inline-block;overflow:hidden;height:1em;line-height:1;vertical-align:bottom;position:relative}
+  .numroll__track{display:block;font-variant-numeric:tabular-nums;will-change:transform;
+    transform:translateY(calc(var(--n,8) * -1em))}
+  .numroll__track span{display:block;height:1em;line-height:1;text-align:center}
 
   .prompts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px;max-width:660px}
   .prompt{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:1000px;cursor:pointer;
@@ -459,6 +466,52 @@
   .cue__pct{color:#82ffc3;font-weight:700}
   .v3scrollcue .material-symbols-outlined{font-size:20px;animation:bob 1.8s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(5px);opacity:1}}
+
+  /* ============================================================
+     SCROLL PARALLAX — the forest background drifts upward as you
+     scroll into the next section, giving a sense of depth/3D.
+     Built on CSS scroll-driven animations: transform-only, runs
+     off the main thread (no scroll listener). Gated behind
+     @supports + reduced-motion so unsupported browsers and users
+     who prefer less motion keep today's static background. ===== */
+  @keyframes bgParallax{
+    from{transform:translate3d(0,0,0) scale(1.06)}
+    to  {transform:translate3d(0,-26vh,0) scale(1.06)}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    @supports (animation-timeline:scroll()){
+      /* Variants 2, 3 & 4 scroll the hero into the content below (the doc
+         root is the scroller in every case). */
+      body[data-variant="2"] .fixedbg__img,
+      body[data-variant="3"] .fixedbg__img,
+      body[data-variant="4"] .fixedbg__img{
+        height:132vh;
+        animation:bgParallax linear both;
+        animation-timeline:scroll(root);
+        animation-range:0 100vh;
+      }
+      /* Variant 1 — pin the hero visuals and let the intro scroll over the
+         drifting background for one viewport of cinematic depth. */
+      body[data-variant="1"] .main{overflow:visible;min-height:auto}
+      body[data-variant="1"] .screen--1{min-height:150vh}
+      body[data-variant="1"] .hero__img{
+        position:fixed;inset:auto;top:0;left:var(--nav-w);z-index:0;
+        width:calc(100vw - var(--nav-w));height:132vh;
+        animation:bgParallax linear both;
+        animation-timeline:scroll(root);
+        animation-range:0 100vh;
+      }
+      body[data-variant="1"] .hero__scrim{
+        position:fixed;inset:auto;top:0;left:var(--nav-w);z-index:0;
+        width:calc(100vw - var(--nav-w));height:100vh;
+      }
+      body[data-variant="1"] .hero__scrim-top{
+        position:fixed;inset:auto;top:0;left:var(--nav-w);z-index:0;
+        width:calc(100vw - var(--nav-w));
+      }
+      body[data-variant="1"] .stage{position:sticky;top:0;height:100vh;min-height:0;flex:none}
+    }
+  }
 
   /* ---- Section 2: Onboarding guide ---- */
   .guide{padding:clamp(40px,5vh,72px) clamp(22px,4vw,64px)}
@@ -577,7 +630,8 @@
   .dash__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
   .wid{position:relative;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:22px;min-height:196px;
     background:rgba(14,17,23,.46);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1);
-    display:flex;flex-direction:column;gap:16px}
+    display:flex;flex-direction:column;gap:16px;
+    transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s ease,border-color .2s ease}
   .wid__title{font-size:15px;font-weight:600;color:#e7ecf2;display:flex;align-items:center;justify-content:space-between;gap:10px}
   .wid__live{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:#82ffc3;display:inline-flex;align-items:center;gap:6px}
   .wid__live::before{content:"";width:7px;height:7px;border-radius:50%;background:#82ffc3;
@@ -592,7 +646,7 @@
   .asset__legend{display:grid;grid-template-columns:1fr 1fr;gap:9px 18px;font-size:12.5px;color:#aeb7c2;margin-top:auto}
   .asset__legend span{display:inline-flex;align-items:center;gap:8px}
   .asset__legend b{color:#fff;font-weight:600;font-feature-settings:"tnum"}
-  .dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
+  .dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto;transition:transform .15s cubic-bezier(.22,1,.36,1)}
 
   .wid--locked .wid__title{color:#8b939e}
   .wid__skel{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
@@ -606,21 +660,68 @@
 
   /* ── Donut chart widget (filled state) ── */
   .wid__chart{display:flex;align-items:center;gap:16px;flex:1;margin-top:2px}
-  .dchart{position:relative;width:104px;height:104px;flex:0 0 auto}
-  .dchart__ring{position:absolute;inset:0;border-radius:50%;
-    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px));
-    mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px));
-    animation:donutDraw 1s cubic-bezier(.2,.7,.2,1) both}
+  .dchart{position:relative;width:104px;height:104px;flex:0 0 auto;transition:transform .2s cubic-bezier(.22,1,.36,1)}
+  /* Donut hole (radial mask) intersected with a clockwise reveal wedge (conic mask).
+     --donut-deg defaults to 360deg → fully shown; the sweep animates it 0→360 on reveal. */
+  @property --donut-deg{syntax:'<angle>';inherits:false;initial-value:360deg}
+  .dchart__ring{position:absolute;inset:0;border-radius:50%;transition:opacity .15s ease;
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px)),conic-gradient(#000 var(--donut-deg),transparent 0);
+    -webkit-mask-composite:source-in;
+    mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px)),conic-gradient(#000 var(--donut-deg),transparent 0);
+    mask-composite:intersect}
+  @keyframes donutSweep{from{--donut-deg:0deg}to{--donut-deg:360deg}}
   .dchart__c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
   .dchart__num{font-size:26px;font-weight:300;color:#fff;line-height:1;font-feature-settings:"tnum"}
   .dchart__cap{font-size:11px;color:#9aa3ae;margin-top:3px}
   .dlegend{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
   .dlegend__row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#c4ccd5;
-    background:rgba(255,255,255,.06);border-radius:999px;padding:5px 12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dlegend__dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+    background:rgba(255,255,255,.06);border-radius:999px;padding:5px 12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    transition:background .18s ease}
+  .dlegend__dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;transition:transform .15s cubic-bezier(.22,1,.36,1)}
   .dlegend__row b{color:#fff;font-weight:600;font-feature-settings:"tnum"}
   .dc-mint{background:#82ffc3}.dc-cyan{background:#38e8ff}.dc-amber{background:#f5a623}
   .dc-red{background:#e0341f}.dc-white{background:rgba(255,255,255,.55)}.dc-grey{background:#566270}
+
+  /* ── Legend ↔ chart hover linking — spotlight the matching slice, dim the rest.
+     .is-hl/.is-on classes are added by JS only on pointer devices. ── */
+  .dchart__hl{position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:0;
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 15px),#000 calc(100% - 14px));
+    transition:opacity .15s ease}
+  .dchart.is-hl .dchart__ring{opacity:.28}
+  .dchart.is-hl .dchart__hl{opacity:1}
+  .asset__bar.is-hl i{opacity:.28}
+  .asset__bar.is-hl i.is-on{opacity:1}
+
+  /* ===== P0 dashboard entrance — IntersectionObserver adds .is-in when a grid scrolls in.
+     Choreography: cards cascade up (reading order, --wi index), then each card's data comes
+     alive — donut sweeps clockwise + the bar segments grow — beginning as the card lands. ===== */
+  /* Entrance is animation-driven (backwards fill holds the hidden state through the stagger
+     delay, then releases transform so :hover can use it freely). */
+  .dash__grid .wid{opacity:0}
+  .dash__grid.is-in .wid{opacity:1;animation:dashCardIn .45s cubic-bezier(.22,1,.36,1) backwards;
+    animation-delay:calc(var(--wi,0) * 55ms)}
+  @keyframes dashCardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .dash__grid.is-in .dchart__ring{animation:donutSweep .9s cubic-bezier(.2,.7,.2,1) both;
+    animation-delay:calc(var(--wi,0) * 55ms + .18s)}
+  .asset__bar i{transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .15s ease}
+  .dash__grid.is-in .asset__bar i{transform:scaleX(1)}
+  .dash__grid.is-in .asset__bar i:nth-child(1){transition-delay:.22s}
+  .dash__grid.is-in .asset__bar i:nth-child(2){transition-delay:.28s}
+  .dash__grid.is-in .asset__bar i:nth-child(3){transition-delay:.34s}
+  .dash__grid.is-in .asset__bar i:nth-child(4){transition-delay:.40s}
+
+  /* P1 hover polish — gated to pointer devices so touch never false-fires. */
+  @media (hover:hover) and (pointer:fine){
+    .dash__grid.is-in .wid:not(.wid--locked):hover{transform:translateY(-3px);
+      box-shadow:0 16px 38px rgba(0,0,0,.42);border-color:rgba(255,255,255,.22)}
+    .dash__grid.is-in .wid:hover .dchart{transform:scale(1.03)}
+    .dlegend__row:hover{background:rgba(255,255,255,.11)}
+    .dlegend__row:hover .dlegend__dot,
+    .asset__legend span:hover .dot{transform:scale(1.4)}
+  }
+  /* Live-dot pulse pauses while its grid is scrolled out of view (perf + calm). */
+  .dash__grid.is-off .wid__live::before{animation-play-state:paused}
 
   .wid--add{border-style:dashed;border-color:rgba(255,255,255,.18);background:transparent;align-items:center;
     justify-content:center;text-align:center;color:#9aa3ae;cursor:pointer;transition:border-color .2s,color .2s}
@@ -1262,7 +1363,7 @@
           <div class="v3hero__scrim" aria-hidden="true"></div>
           <div class="v3hero__inner">
             <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span><span class="v3eyebrow__txt">Telematics connected &nbsp;|&nbsp; Monitoring 4,000 assets</span></span>
-            <h2 class="v3hero__title">8 new actions since you <span class="accent">last looked</span>, act now</h2>
+            <h2 class="v3hero__title"><span class="numroll" data-count="8" role="img" aria-label="8"><span class="numroll__track" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></span></span> new actions since you <span class="accent">last looked</span>, act now</h2>
 
             <div class="action-row">
               <span class="action-row__label">For you</span>
@@ -1568,7 +1669,7 @@
           <div class="v3hero__scrim" aria-hidden="true"></div>
           <div class="v3hero__inner">
             <span class="v3eyebrow"><span class="v3eyebrow__dot" aria-hidden="true"></span><span class="v3eyebrow__txt">Telematics connected &nbsp;|&nbsp; Monitoring 4,000 assets</span></span>
-            <h2 class="v3hero__title">8 new actions since you <span class="accent">last looked</span>, act now</h2>
+            <h2 class="v3hero__title"><span class="numroll" data-count="8" role="img" aria-label="8"><span class="numroll__track" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></span></span> new actions since you <span class="accent">last looked</span>, act now</h2>
 
             <div class="action-row">
               <span class="action-row__label">For you</span>
@@ -3095,6 +3196,159 @@
       askSend.addEventListener('click', function(){ askField.value = ''; syncAsk(); askField.focus(); });
       askField.addEventListener('keydown', function(e){ if(e.key === 'Enter' && askField.value.trim()){ askField.value = ''; syncAsk(); } });
     }
+  })();
+  </script>
+
+  <script>
+  /* ===== P0 dashboard entrance: reveal each .dash__grid on scroll-in, then count up KPIs ===== */
+  (function(){
+    var grids = document.querySelectorAll('.dash__grid');
+    if(!grids.length) return;
+    // Per-card index drives the cascade + donut stagger via the --wi CSS var.
+    grids.forEach(function(grid){
+      grid.querySelectorAll('.wid').forEach(function(w, i){ w.style.setProperty('--wi', i); });
+    });
+
+    var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if(reduce){ grids.forEach(function(g){ g.classList.add('is-in'); }); return; }
+
+    function countUp(el, dur){
+      var target = parseInt(el.getAttribute('data-count') || el.textContent.replace(/[^0-9]/g, ''), 10);
+      if(isNaN(target)) return;
+      el.setAttribute('data-count', target);
+      el.textContent = '0';
+      var start = performance.now();
+      (function tick(now){
+        var t = Math.min(1, (now - start) / dur);
+        var eased = 1 - Math.pow(1 - t, 3);           // ease-out cubic, decelerates into place
+        el.textContent = Math.round(target * eased);
+        if(t < 1) requestAnimationFrame(tick); else el.textContent = target;
+      })(start);
+    }
+
+    function reveal(grid){
+      grid.classList.add('is-in');
+      grid.querySelectorAll('.asset__num,.dchart__num').forEach(function(n){
+        var card = n.closest('.wid');
+        var idx = card ? (parseInt(card.style.getPropertyValue('--wi'), 10) || 0) : 0;
+        setTimeout(function(){ countUp(n, 800); }, 180 + idx * 55);  // land with the donut sweep
+      });
+    }
+
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ reveal(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.25 });
+    grids.forEach(function(g){ io.observe(g); });
+
+    // Pause the looping Live-dot pulse while a grid is off-screen (kept observing, not one-shot).
+    var pauseIo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ e.target.classList.toggle('is-off', !e.isIntersecting); });
+    }, { threshold: 0 });
+    grids.forEach(function(g){ if(g.querySelector('.wid__live')) pauseIo.observe(g); });
+
+    // ── Legend ↔ chart hover linking (pointer devices only) ──
+    if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){
+      // Split a string on top-level commas only (rgba(...) commas are nested).
+      function topSplit(str){
+        var out = [], depth = 0, cur = '';
+        for(var i = 0; i < str.length; i++){
+          var ch = str[i];
+          if(ch === '(') depth++;
+          else if(ch === ')') depth--;
+          if(ch === ',' && depth === 0){ out.push(cur); cur = ''; }
+          else cur += ch;
+        }
+        if(cur.trim()) out.push(cur);
+        return out;
+      }
+      // Parse a conic-gradient() string into [{color,start,end}] segments.
+      function parseConic(bg){
+        var m = bg.match(/conic-gradient\((.*)\)\s*$/);
+        if(!m) return null;
+        return topSplit(m[1]).map(function(seg){
+          var parts = seg.trim().split(/\s+/);
+          var end = parts.pop(), start = parts.pop();
+          return { color: parts.join(' '), start: start, end: end };
+        });
+      }
+
+      grids.forEach(function(grid){
+        // Asset Status bar: legend span index → bar segment index (same order).
+        grid.querySelectorAll('.wid').forEach(function(card){
+          var bar = card.querySelector('.asset__bar');
+          var legend = card.querySelector('.asset__legend');
+          if(bar && legend){
+            var segs = bar.querySelectorAll('i');
+            legend.querySelectorAll('span').forEach(function(span, i){
+              span.addEventListener('mouseenter', function(){
+                bar.classList.add('is-hl');
+                segs.forEach(function(s, j){ s.classList.toggle('is-on', j === i); });
+              });
+              span.addEventListener('mouseleave', function(){
+                bar.classList.remove('is-hl');
+                segs.forEach(function(s){ s.classList.remove('is-on'); });
+              });
+            });
+          }
+        });
+
+        // Donut cards: legend row index → conic segment index (same order).
+        grid.querySelectorAll('.dchart').forEach(function(dchart){
+          var ring = dchart.querySelector('.dchart__ring');
+          if(!ring) return;
+          var segments = parseConic(ring.getAttribute('style') || '');
+          if(!segments) return;
+          var legend = dchart.parentElement.querySelector('.dlegend');
+          if(!legend) return;
+          // One reusable overlay per donut that renders the spotlighted wedge.
+          var hl = document.createElement('div');
+          hl.className = 'dchart__hl';
+          dchart.appendChild(hl);
+          legend.querySelectorAll('.dlegend__row').forEach(function(row, i){
+            var seg = segments[i];
+            if(!seg) return;
+            row.addEventListener('mouseenter', function(){
+              hl.style.background = 'conic-gradient(transparent 0 ' + seg.start + ',' +
+                seg.color + ' ' + seg.start + ' ' + seg.end + ',transparent ' + seg.end + ' 100%)';
+              dchart.classList.add('is-hl');
+            });
+            row.addEventListener('mouseleave', function(){
+              dchart.classList.remove('is-hl');
+            });
+          });
+        });
+      });
+    }
+  })();
+  </script>
+
+  <script>
+  /* Roll the "8 new actions" headline number up odometer-style (Motion
+     number-trend) each time the hero scrolls/switches into view. The track is
+     a stacked 0-9 column; we slide from 0 to the target digit with a spring
+     easing that gently overshoots in the trend (upward) direction. */
+  (function(){
+    var rolls = document.querySelectorAll('.numroll');
+    if(!rolls.length) return;
+    var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    // Spring linear() easing — settles with a small overshoot past the target.
+    var SPRING = 'linear(0,0.02,0.08,0.17,0.29,0.42,0.56,0.69,0.80,0.89,0.95,0.99,1.008,1.012,1.011,1.007,1.003,1.001,1)';
+    function run(roll){
+      var track = roll.querySelector('.numroll__track');
+      var target = parseInt(roll.getAttribute('data-count'), 10);
+      if(!track || isNaN(target)) return;
+      track.style.setProperty('--n', target);   // CSS rest position = target digit
+      if(reduce) return;
+      track.animate(
+        [{transform:'translateY(0)'},
+         {transform:'translateY(-'+target+'em)'}],
+        {duration: 1100, easing: SPRING, fill: 'both'}
+      );
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting) run(e.target); });
+    }, { threshold: 0.6 });
+    rolls.forEach(function(r){ io.observe(r); });
   })();
   </script>
 
