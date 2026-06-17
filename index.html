@@ -854,7 +854,9 @@
         </div>
       </header>
       <section class="screen screen--1">
-      <img class="hero__img" data-bgimg src="" alt="Freight truck on a forest highway">
+      <video class="hero__img" id="v1-hero-vid" autoplay muted playsinline preload="auto" style="animation:none;object-position:center center">
+        <source src="images/hero-bg.mp4" type="video/mp4">
+      </video>
       <div class="hero__scrim-top"></div>
       <div class="hero__scrim"></div>
 
@@ -2236,6 +2238,17 @@
     sceneBtns.forEach(function(b){ b.addEventListener('click',function(){ scene=b.getAttribute('data-bg'); render(); }); });
     timeBtns.forEach(function(b){ b.addEventListener('click',function(){ time=b.getAttribute('data-time'); render(); }); });
     render();
+  })();
+  </script>
+  <script>
+  /* V1 hero video — play once then freeze on last frame */
+  (function(){
+    var vid = document.getElementById('v1-hero-vid');
+    if(!vid) return;
+    vid.addEventListener('ended', function(){
+      vid.currentTime = vid.duration - 0.016;
+      vid.pause();
+    });
   })();
   </script>
   <script>
